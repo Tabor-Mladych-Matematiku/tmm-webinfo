@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 import os
 
 from db_model import db
@@ -23,7 +23,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
 
+@app.route('/example')
+def example():
+    return render_template("example.html", title="Jinja and Flask")
+
+
 @app.route('/')
-def hello_world():
-    return 'Hello from Flask!'
+def index():
+    return render_template("index.html", title="Jinja and Flask")
 
