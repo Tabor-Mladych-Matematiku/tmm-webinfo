@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask_bcrypt import Bcrypt, check_password_hash
 
-from db_model import db, Admin, Tym
+from db_model import db, Admin, Team
 from config import config
 
 app = Flask(__name__)
@@ -38,7 +38,7 @@ def load_user(user_id):
     if user_id == "-1":
         return Admin()
     else:
-        return Tym.query.get(int(user_id))
+        return Team.query.get(int(user_id))
 
 
 bcrypt = Bcrypt()
@@ -67,9 +67,9 @@ def login():
             login_user(Admin(), remember=True)
             return redirect(url_for('example'))
         else:
-            tym: Tym = Tym.query.filter_by(jmeno=user).first()
-            if tym and check_password_hash(tym.heslo, password):
-                login_user(tym)
+            team: Team = Team.query.filter_by(name=user).first()
+            if team and check_password_hash(team.password, password):
+                login_user(team)
                 return redirect(url_for('example'))
             else:
                 flash(f"Neplatné přilašovací údaje.", "danger")

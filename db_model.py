@@ -26,27 +26,35 @@ class Admin(User):
     def id(self):
         return -1
 
-    jmeno = "admin"
+    name = "admin"
 
 
-class Tym(db.Model, User):
+class Team(db.Model, User):
 
-    __tablename__ = "tymy"
+    __tablename__ = "teams"
 
-    id_tym = db.Column(db.Integer, primary_key=True)
-    # id_sifrovacka = db.Column(db.Integer, db.ForeignKey("sifrovacky.id_sifrovacka"))
-    jmeno = db.Column(db.String(256), nullable=False)
-    heslo = db.Column(db.String(256), nullable=False)
-    telefon = db.Column(db.String(256), nullable=True)
+    id_team = db.Column(db.Integer, primary_key=True)
+    # id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunt.id_puzzlehunt"))
+    name = db.Column(db.String(256), nullable=False)
+    password = db.Column(db.String(256), nullable=False)
+    phone = db.Column(db.String(256), nullable=True)
 
     @property
     def id(self):
-        return -1
+        return self.id_team
 
 
-class Sifrovacka(db.Model):
+class Settings(db.Model):
 
-    __tablename__ = "sifrovacky"
+    __tablename__ = "settings"
 
-    id_sifrovacka = db.Column(db.Integer, primary_key=True)
-    sifrovacka = db.Column(db.String(256))
+    key = db.Column(db.String(256), primary_key=True)
+    value = db.Column(db.Text)
+
+
+class PuzzleHunt(db.Model):
+
+    __tablename__ = "puzzlehunts"
+
+    id_puzzlehunt = db.Column(db.Integer, primary_key=True)
+    puzzlehunt = db.Column(db.String(256))
