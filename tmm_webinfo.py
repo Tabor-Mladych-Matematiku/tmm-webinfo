@@ -1,17 +1,21 @@
-from flask import Flask, render_template
-import os
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+from flask_bcrypt import Bcrypt, check_password_hash
 
-from db_model import db
+from db_model import db, Admin, Tym
+from config import config
 
 app = Flask(__name__)
+app.secret_key = config['secret']
+
 app.config["DEBUG"] = True
 
-if 'tmm_webinfo.db_hostname' in os.environ:
+if 'db' in config:
     SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-        username=os.environ['tmm_webinfo.db_user'],
-        password=os.environ['tmm_webinfo.db_password'],
-        hostname=os.environ['tmm_webinfo.db_hostname'],
-        databasename=os.environ['tmm_webinfo.db_database'],
+        username=config['db']['user'],
+        password=config['db']['password'],
+        hostname=config['db']['hostname'],
+        databasename=config['db']['database'],
     )
 else:
     SQLALCHEMY_DATABASE_URI = "sqlite:///test.sqlite"
@@ -22,8 +26,58 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.session_protection = "strong"
+login_manager.login_view = "login"
+login_manager.login_message_category = "info"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == "-1":
+        return Admin()
+    else:
+        return Tym.query.get(int(user_id))
+
+
+bcrypt = Bcrypt()
+bcrypt.init_app(app)
+
+
+@app.route('/login', methods=("GET", "POST"))
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('example'))
+
+    user = ""
+    if request.method == "POST":
+        user = request.form["user"]
+        password = request.form["password"]
+
+        if user == "admin" and password == "admin":  # TODO
+            login_user(Admin(), remember=True)
+            return redirect(url_for('example'))
+        else:
+            tym: Tym = Tym.query.filter_by(jmeno=user).first()
+            if tym and check_password_hash(tym.heslo, password):
+                login_user(tym)
+                return redirect(url_for('example'))
+            else:
+                flash(f"Neplatné přilašovací údaje.", "danger")
+
+    return render_template("login.html", title="Přihlášení", user=user)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
 
 @app.route('/example')
+@login_required
 def example():
     return render_template("example.html", title="Jinja and Flask")
 
@@ -31,4 +85,3 @@ def example():
 @app.route('/')
 def index():
     return render_template("index.html", title="Jinja and Flask")
-

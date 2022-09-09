@@ -1,0 +1,37 @@
+{# templates/example.html #}
+
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container login-form">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <form method="post">
+        <div class="row mb-3">
+            <label for="user" class="col-3 col-form-label">Tým</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="user" name="user" required value="{{ user }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="password" class="col-3 col-form-label">Heslo</label>
+            <div class="col-9">
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Přihlásit</button>
+            </div>
+        </div>
+    </form>
+</main>
+{% endblock content %}
