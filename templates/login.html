@@ -3,7 +3,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<main class="container login-form">
+<main class="container login-form mt-4">
+    <h1 class="mb-3">TMM webinfo</h1>
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}

@@ -45,6 +45,14 @@ bcrypt = Bcrypt()
 bcrypt.init_app(app)
 
 
+def render(template, **kwargs):
+    parameters = {
+        "team": current_user
+    }
+    parameters.update(kwargs)
+    return render_template(template, **parameters)
+
+
 @app.route('/login', methods=("GET", "POST"))
 def login():
     if current_user.is_authenticated:
@@ -55,7 +63,7 @@ def login():
         user = request.form["user"]
         password = request.form["password"]
 
-        if user == "admin" and password == "admin":  # TODO
+        if user == "admin" and password == config['admin_password']:
             login_user(Admin(), remember=True)
             return redirect(url_for('example'))
         else:
@@ -79,9 +87,10 @@ def logout():
 @app.route('/example')
 @login_required
 def example():
-    return render_template("example.html", title="Jinja and Flask")
+    return render("example.html", title="Jinja and Flask")
 
 
 @app.route('/')
+@login_required
 def index():
-    return render_template("index.html", title="Jinja and Flask")
+    return render("index.html", title="Jinja and Flask")

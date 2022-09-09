@@ -1,4 +1,5 @@
 secret: "test"
+admin_password: "admin"
 db:
   user: "db_user"
   password: "db_password"

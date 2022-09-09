@@ -26,6 +26,8 @@ class Admin(User):
     def id(self):
         return -1
 
+    jmeno = "admin"
+
 
 class Tym(db.Model, User):
 
