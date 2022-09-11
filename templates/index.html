@@ -1,13 +1,19 @@
 {# templates/index.html #}
 
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{ title }}</title>
-</head>
+{% extends "base.html" %}
 
-<body>
-  <h1>Welcome to {{ title }}!</h1>
-</body>
-</html>
+{% block content %}
+    <form method="post" action="/submit">
+        <div class="row mb-3">
+            <div class="col d-flex">
+                <div class="flex-fill me-2">
+                    <input type="text" class="form-control" id="code" name="code" required value="" placeholder="Kód stanoviště nebo řešení šifry">
+                    <label for="code"></label>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Odeslat</button>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock content %}

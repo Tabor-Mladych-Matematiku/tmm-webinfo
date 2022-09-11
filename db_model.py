@@ -1,11 +1,33 @@
 import abc
-
+from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+
+
+class Settings(db.Model):
+
+    __tablename__ = "settings"
+
+    key = db.Column(db.String(256), primary_key=True)
+    value = db.Column(db.Text)
+
+    def __init__(self, key):
+        self.key = key
+
+
+class Puzzlehunt(db.Model):
+
+    __tablename__ = "puzzlehunts"
+
+    id_puzzlehunt = db.Column(db.Integer, primary_key=True)
+    puzzlehunt = db.Column(db.String(256))
+
+    def __init__(self, puzzlehunt):
+        self.puzzlehunt = puzzlehunt
 
 
 class User(UserMixin):
@@ -37,7 +59,7 @@ class Team(db.Model, User):
     __tablename__ = "teams"
 
     id_team = db.Column(db.Integer, primary_key=True)
-    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunts.id_puzzlehunt", ondelete='RESTRICT'))
+    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey(Puzzlehunt.id_puzzlehunt, ondelete='RESTRICT'))
     name = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
     phone = db.Column(db.String(256), nullable=True)
@@ -58,34 +80,12 @@ class Team(db.Model, User):
         self.password = bcrypt.generate_password_hash(password_plain)
 
 
-class Settings(db.Model):
-
-    __tablename__ = "settings"
-
-    key = db.Column(db.String(256), primary_key=True)
-    value = db.Column(db.Text)
-
-    def __init__(self, key):
-        self.key = key
-
-
-class Puzzlehunt(db.Model):
-
-    __tablename__ = "puzzlehunts"
-
-    id_puzzlehunt = db.Column(db.Integer, primary_key=True)
-    puzzlehunt = db.Column(db.String(256))
-
-    def __init__(self, puzzlehunt):
-        self.puzzlehunt = puzzlehunt
-
-
 class Puzzle(db.Model):
 
     __tablename__ = "puzzles"
 
     id_puzzle = db.Column(db.Integer, primary_key=True)
-    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunts.id_puzzlehunt", ondelete='RESTRICT'))
+    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey(Puzzlehunt.id_puzzlehunt, ondelete='RESTRICT'))
     puzzle = db.Column(db.String(256))
     assignment = db.Column(db.Text)
     order = db.Column(db.Integer)
@@ -106,8 +106,8 @@ class PuzzlePrerequisite(db.Model):
 
     __tablename__ = "puzzle_prerequisites"
 
-    id_previous_puzzle = db.Column(db.Integer, db.ForeignKey("puzzles.id_puzzle", ondelete='RESTRICT'), primary_key=True)
-    id_new_puzzle = db.Column(db.Integer, db.ForeignKey("puzzles.id_puzzle", ondelete='RESTRICT'), primary_key=True)
+    id_previous_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
+    id_new_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
 
     def __init__(self, id_previous_puzzle, id_new_puzzle):
         self.id_previous_puzzle = id_previous_puzzle
@@ -119,7 +119,7 @@ class Code(db.Model):
     __tablename__ = "codes"
 
     id_code = db.Column(db.Integer, primary_key=True)
-    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunts.id_puzzlehunt", ondelete='RESTRICT'))
+    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey(Puzzlehunt.id_puzzlehunt, ondelete='RESTRICT'))
     code = db.Column(db.String(256))
     message = db.Column(db.Text)
 
@@ -132,12 +132,13 @@ class Code(db.Model):
     def puzzle_name(self):
         return None
 
+
 class ArrivalCode(db.Model):
 
     __tablename__ = "arrival_codes"
 
     id_arrival_code = db.Column(db.Integer, primary_key=True)
-    id_puzzle = db.Column(db.Integer, db.ForeignKey("puzzles.id_puzzle", ondelete='RESTRICT'))
+    id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'))
     code = db.Column(db.String(256))
     message = db.Column(db.Text)
 
@@ -156,7 +157,7 @@ class SolutionCode(db.Model):
     __tablename__ = "solution_codes"
 
     id_solution_code = db.Column(db.Integer, primary_key=True)
-    id_puzzle = db.Column(db.Integer, db.ForeignKey("puzzles.id_puzzle", ondelete='RESTRICT'))
+    id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'))
     code = db.Column(db.String(256))
     message = db.Column(db.Text)
 
@@ -168,3 +169,31 @@ class SolutionCode(db.Model):
     @property
     def puzzle_name(self):
         return Puzzle.query.get(self.id_puzzle).puzzle
+
+
+class TeamArrived(db.Model):
+
+    __tablename__ = "team_arrivals"
+
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
+    timestamp = db.Column(db.DateTime)
+
+    def __init__(self, id_team, id_puzzle):
+        self.id_team = id_team
+        self.id_puzzle = id_puzzle
+        self.timestamp = datetime.now()
+
+
+class TeamSolved(db.Model):
+
+    __tablename__ = "team_solves"
+
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
+    timestamp = db.Column(db.DateTime)
+
+    def __init__(self, id_team, id_puzzle):
+        self.id_team = id_team
+        self.id_puzzle = id_puzzle
+        self.timestamp = datetime.now()

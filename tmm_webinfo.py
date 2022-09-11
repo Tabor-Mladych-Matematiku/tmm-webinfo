@@ -1,10 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, login_user, login_required, current_user, logout_user
-from flask_bcrypt import check_password_hash
+from flask import Flask
+from flask_login import LoginManager
 
 from db_model import db, Admin, Team, bcrypt
 from config import config
-from helpers import render, get_current_puzzlehunt
 
 app = Flask(__name__)
 app.secret_key = config['secret']
@@ -47,47 +45,11 @@ def load_user(user_id):
         return Team.query.get(int(user_id))
 
 
-# Login routes
-
-
-@app.route('/login', methods=("GET", "POST"))
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('example'))
-
-    user = ""
-    if request.method == "POST":
-        user = request.form["user"]
-        password = request.form["password"]
-
-        if user == "admin" and password == config['admin_password']:
-            login_user(Admin(), remember=True)
-            return redirect(url_for('example'))
-        else:
-            team: Team = Team.query.filter_by(name=user, id_puzzlehunt=get_current_puzzlehunt()).first()
-            if team and check_password_hash(team.password, password):
-                login_user(team)
-                return redirect(url_for('example'))
-            else:
-                flash(f"Neplatné přilašovací údaje.", "danger")
-
-    return render_template("login.html", title="Přihlášení", user=user)
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+from login import login_blueprint
+app.register_blueprint(login_blueprint)
 
 
 # Admin routes
-
-
-@app.route('/example')
-@login_required
-def example():
-    return render("example.html", title="Jinja and Flask")
 
 
 from puzzlehunts import puzzlehunts
@@ -99,10 +61,9 @@ app.register_blueprint(teams)
 from codes import codes
 app.register_blueprint(codes)
 
+
 # Team routes
 
 
-@app.route('/')
-@login_required
-def index():
-    return render("index.html", title="Jinja and Flask")
+from journey import journey
+app.register_blueprint(journey)
