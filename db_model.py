@@ -95,3 +95,20 @@ class Puzzle(db.Model):
         self.puzzle = puzzle
         self.assignment = assignment
         self.order = order
+
+    def get_prerequisites(self):
+        p = Puzzle.query.join(PuzzlePrerequisite, Puzzle.id_puzzle == PuzzlePrerequisite.id_previous_puzzle)\
+            .filter_by(id_new_puzzle=self.id_puzzle).all()
+        return p
+
+
+class PuzzlePrerequisite(db.Model):
+
+    __tablename__ = "puzzle_prerequisites"
+
+    id_previous_puzzle = db.Column(db.Integer, db.ForeignKey("puzzles.id_puzzle"), primary_key=True)
+    id_new_puzzle = db.Column(db.Integer, db.ForeignKey("puzzles.id_puzzle"), primary_key=True)
+
+    def __init__(self, id_previous_puzzle, id_new_puzzle):
+        self.id_previous_puzzle = id_previous_puzzle
+        self.id_new_puzzle = id_new_puzzle

@@ -36,4 +36,24 @@
             </div>
         </div>
     </form>
+
+    {% if puzzle %}
+        <h2>Závislosti</h2>
+        <p>Šifry, které musí být vyřešené, aby se tahle zpřístupnila.</p>
+        <ul class="list-group mb-3">
+            {% for prerequisite in puzzle.get_prerequisites() %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-fill">
+                        {{ prerequisite.puzzle }}
+                    </div>
+                    <div>
+                        <form method="post" action="/prerequisites/{{ puzzle.id_puzzle }}/delete/{{ prerequisite.id_puzzle }}" class="d-inline" onsubmit='return confirm("Smazat závislost na \"{{ prerequisite.puzzle }}\"?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-secondary" href="/prerequisites/{{ puzzle.id_puzzle }}/new" role="button">Přidat šifru</a>
+    {% endif %}
 {% endblock content_admin %}

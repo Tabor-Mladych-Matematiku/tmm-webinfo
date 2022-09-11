@@ -1,0 +1,28 @@
+{# templates/prerequisite_edit.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <h2>Přidat závislost pro "{{ puzzle.puzzle }}"</h2>
+    {% if other_puzzles %}
+    <form method="post">
+        {% for other_puzzle in other_puzzles %}
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="prerequisite" id="prerequisite_{{ other_puzzle.id_puzzle }}" value="{{ other_puzzle.id_puzzle }}">
+            <label class="form-check-label" for="prerequisite_{{ other_puzzle.id_puzzle }}">
+                {{ other_puzzle.puzzle }}
+            </label>
+        </div>
+        {% endfor %}
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+    {% else %}
+        <p>V této šifrovačce neexistují šifry, na kterých by už šifra "{{ puzzle.puzzle }}" nezávisela.</p>
+        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}" role="button">Zpět</a>
+    {% endif %}
+{% endblock content_admin %}
