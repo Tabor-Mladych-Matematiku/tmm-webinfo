@@ -1,0 +1,21 @@
+{# templates/base_admin.html #}
+
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+    <div class="row">
+        <div class="col">
+            {% if user.is_admin %}
+                {% block content_admin %}
+                    <h1>Administrace</h1>
+                {% endblock content_admin %}
+            {% else %}
+                <div class="alert alert-danger fade show" role="alert">
+                    Tato stránka je dostupná pouze organizátorům.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock content %}

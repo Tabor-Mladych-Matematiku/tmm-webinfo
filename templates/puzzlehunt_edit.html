@@ -1,0 +1,26 @@
+{# templates/puzzlehunts.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <form method="post">
+        <div class="row mb-3">
+            <label for="id_puzzlehunt" class="col-3 col-form-label">id_puzzlehunt</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="id_puzzlehunt" name="id_puzzlehunt" required value="{{ puzzlehunt.id_puzzlehunt if puzzlehunt else "" }}" disabled>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="puzzlehunt" class="col-3 col-form-label">Šifrovačka</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="puzzlehunt" name="puzzlehunt" required value="{{ puzzlehunt.puzzlehunt if puzzlehunt else "" }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="/puzzlehunts" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+{% endblock content_admin %}

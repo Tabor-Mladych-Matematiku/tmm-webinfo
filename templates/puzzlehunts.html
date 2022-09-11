@@ -1,0 +1,43 @@
+{# templates/puzzlehunts.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <h1>Šifrovačky</h1>
+    <ul class="list-group mb-3">
+        {% for puzzlehunt in puzzlehunts %}
+            {% if puzzlehunt.id_puzzlehunt == current_puzzlehunt %}
+                <li class="list-group-item active d-flex align-items-center" aria-current="true">
+                    <div class="flex-fill">
+                        {{ puzzlehunt.puzzlehunt }}
+                    </div>
+                    <div>
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/activate" class="d-inline">
+                            <button type="submit" class="btn btn-primary" disabled><i class="bi bi-flag-fill"></i></button>
+                        </form>
+                        <a class="btn btn-warning" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/delete" class="d-inline">
+                            <button type="submit" class="btn btn-danger" disabled><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% else %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-fill">
+                        {{ puzzlehunt.puzzlehunt }}
+                    </div>
+                    <div>
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/activate" class="d-inline">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-flag"></i></button>
+                        </form>
+                        <a class="btn btn-warning" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/delete" class="d-inline">
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <a class="btn btn-secondary" href="/puzzlehunts/new" role="button">Přidat šifrovačku</a>
+{% endblock content_admin %}

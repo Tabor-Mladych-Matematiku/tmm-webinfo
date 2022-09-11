@@ -20,7 +20,7 @@ class Admin(User):
 
     @property
     def is_admin(self):
-        return False
+        return True
 
     @property
     def id(self):
@@ -51,10 +51,16 @@ class Settings(db.Model):
     key = db.Column(db.String(256), primary_key=True)
     value = db.Column(db.Text)
 
+    def __init__(self, key):
+        self.key = key
 
-class PuzzleHunt(db.Model):
+
+class Puzzlehunt(db.Model):
 
     __tablename__ = "puzzlehunts"
 
     id_puzzlehunt = db.Column(db.Integer, primary_key=True)
     puzzlehunt = db.Column(db.String(256))
+
+    def __init__(self, puzzlehunt):
+        self.puzzlehunt = puzzlehunt
