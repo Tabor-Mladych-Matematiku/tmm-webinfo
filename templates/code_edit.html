@@ -1,0 +1,36 @@
+{# templates/code_edit.html #}
+
+{% extends "base_admin.html" %}
+{% import "_macros.html" as macros %}
+
+{% block content_admin %}
+    <h2>{{ heading }}</h2>
+    <form method="post">
+        {% if puzzle_name %}
+            <div class="row mb-3">
+            <label for="puzzle" class="col-3 col-form-label">Šifra</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="puzzle" name="puzzle" disabled value="{{ puzzle_name }}">
+            </div>
+        </div>
+        {% endif %}
+        <div class="row mb-3">
+            <label for="code" class="col-3 col-form-label">Kód</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="code" name="code" required value="{{ code.code if code else "" }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="message" class="col-3 col-form-label">Zpráva</label>
+            <div class="col-9">
+                {{ macros.html_textarea("message", code.message if code else "") }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="{{ back_url }}" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+{% endblock content_admin %}

@@ -96,6 +96,8 @@ from puzzles import puzzles
 app.register_blueprint(puzzles)
 from teams import teams
 app.register_blueprint(teams)
+from codes import codes
+app.register_blueprint(codes)
 
 # Team routes
 

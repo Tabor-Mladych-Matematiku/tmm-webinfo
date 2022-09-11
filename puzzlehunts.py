@@ -1,5 +1,6 @@
 from flask import request, redirect, flash, Blueprint
 
+from codes import get_codes
 from db_model import Puzzlehunt, db, Settings
 from helpers import get_current_puzzlehunt, render, admin_required
 
@@ -39,7 +40,7 @@ def puzzlehunts_edit(id_puzzlehunt):
         db.session.commit()
         return redirect("/puzzlehunts")
     else:
-        return render("puzzlehunt_edit.html", puzzlehunt=puzzlehunt)
+        return render("puzzlehunt_edit.html", puzzlehunt=puzzlehunt, codes=get_codes(id_puzzlehunt))
 
 
 @puzzlehunts.route('/puzzlehunts/<id_puzzlehunt>/activate', methods=("POST",))

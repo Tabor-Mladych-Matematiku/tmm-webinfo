@@ -23,4 +23,23 @@
             </div>
         </div>
     </form>
+    {% if puzzlehunt %}
+        <h2>Kódy</h2>
+        <ul class="list-group mb-3">
+            {% for code in codes %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-fill">
+                        {{ code.code }}
+                    </div>
+                    <div>
+                        <a class="btn btn-warning" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/codes/{{ code.id_code }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/codes/{{ code.id_code }}/delete" class="d-inline" onsubmit='return confirm("Smazat kód \"{{ code.code }}\"?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-secondary" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/codes/new" role="button">Přidat kód</a>
+    {% endif %}
 {% endblock content_admin %}

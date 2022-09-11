@@ -47,7 +47,7 @@
                         {{ prerequisite.puzzle }}
                     </div>
                     <div>
-                        <form method="post" action="/prerequisites/{{ puzzle.id_puzzle }}/delete/{{ prerequisite.id_puzzle }}" class="d-inline" onsubmit='return confirm("Smazat závislost na \"{{ prerequisite.puzzle }}\"?")'>
+                        <form method="post" action="/prerequisites/{{ puzzle.id_puzzle }}/prerequisites/{{ prerequisite.id_puzzle }}/delete" class="d-inline" onsubmit='return confirm("Smazat závislost na \"{{ prerequisite.puzzle }}\"?")'>
                             <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
                         </form>
                     </div>
@@ -55,5 +55,41 @@
             {% endfor %}
         </ul>
         <a class="btn btn-secondary" href="/prerequisites/{{ puzzle.id_puzzle }}/new" role="button">Přidat šifru</a>
+
+        <h2>Otevírací kódy</h2>
+        <ul class="list-group mb-3">
+            {% for code in arrival_codes %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-fill">
+                        {{ code.code }}
+                    </div>
+                    <div>
+                        <a class="btn btn-warning" href="/puzzles/{{ puzzle.id_puzzle }}/arrival_codes/{{ code.id_arrival_code }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="/puzzles/{{ puzzle.id_puzzle }}/arrival_codes/{{ code.id_arrival_code }}/delete" class="d-inline" onsubmit='return confirm("Smazat kód \"{{ code.code }}\"?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/arrival_codes/new" role="button">Přidat otevírací kód</a>
+
+        <h2>Řešení</h2>
+        <ul class="list-group mb-3">
+            {% for code in solution_codes %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-fill">
+                        {{ code.code }}
+                    </div>
+                    <div>
+                        <a class="btn btn-warning" href="/puzzles/{{ puzzle.id_puzzle }}/solution_codes/{{ code.id_solution_code }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="/puzzles/{{ puzzle.id_puzzle }}/solution_codes/{{ code.id_solution_code }}/delete" class="d-inline" onsubmit='return confirm("Smazat řešení \"{{ code.code }}\"?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/solution_codes/new" role="button">Přidat řešení</a>
     {% endif %}
 {% endblock content_admin %}
