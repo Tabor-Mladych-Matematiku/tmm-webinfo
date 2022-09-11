@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask_bcrypt import Bcrypt, check_password_hash
 
-from db_model import db, Admin, Team, Settings, Puzzlehunt
+from db_model import db, Admin, Team
 from config import config
+from helpers import render
 
 app = Flask(__name__)
 app.secret_key = config['secret']
@@ -47,23 +48,6 @@ def load_user(user_id):
 
 bcrypt = Bcrypt()
 bcrypt.init_app(app)
-
-# Helpers
-
-
-def get_current_puzzlehunt():
-    current_puzzlehunt = Settings.query.get("current_puzzlehunt")
-    if current_puzzlehunt is not None:
-        return int(current_puzzlehunt.value)
-    return None
-
-
-def render(template, **kwargs):
-    parameters = {
-        "user": current_user
-    }
-    parameters.update(kwargs)
-    return render_template(template, **parameters)
 
 
 # Login routes
@@ -109,76 +93,8 @@ def example():
     return render("example.html", title="Jinja and Flask")
 
 
-@app.route('/puzzlehunts')
-@login_required
-def puzzlehunts():
-    puzzlehunts = Puzzlehunt.query.all()
-    current_puzzlehunt = get_current_puzzlehunt()
-    return render("puzzlehunts.html", puzzlehunts=puzzlehunts, current_puzzlehunt=current_puzzlehunt)
-
-
-@app.route('/puzzlehunts/new', methods=("GET", "POST"))
-@login_required
-def puzzlehunts_new():
-    if request.method == "POST":
-        puzzlehunt = Puzzlehunt(request.form["puzzlehunt"])
-        db.session.add(puzzlehunt)
-        db.session.commit()
-        return redirect("/puzzlehunts")
-    return render("puzzlehunt_edit.html")
-
-
-@app.route('/puzzlehunts/<id_puzzlehunt>', methods=("GET", "POST"))
-@login_required
-def puzzlehunts_edit(id_puzzlehunt):
-    puzzlehunt = Puzzlehunt.query.get(id_puzzlehunt)
-    if puzzlehunt is None:
-        flash(f"Šifrovačka s id_puzzlehunt={id_puzzlehunt} neexistuje.", "warning")
-        return redirect("/puzzlehunts")
-
-    if request.method == "POST":
-        puzzlehunt.puzzlehunt = request.form["puzzlehunt"]
-        db.session.add(puzzlehunt)
-        db.session.commit()
-        return redirect("/puzzlehunts")
-    else:
-        return render("puzzlehunt_edit.html", puzzlehunt=puzzlehunt)
-
-
-@app.route('/puzzlehunts/<id_puzzlehunt>/activate', methods=("POST",))
-@login_required
-def puzzlehunts_activate(id_puzzlehunt):
-    puzzlehunt = Puzzlehunt.query.get(id_puzzlehunt)
-    if puzzlehunt is None:
-        flash(f"Šifrovačka s id_puzzlehunt={id_puzzlehunt} neexistuje.", "warning")
-    else:
-        current_puzzlehunt_setting = Settings.query.get("current_puzzlehunt")
-        if current_puzzlehunt_setting is None:
-            current_puzzlehunt_setting = Settings("current_puzzlehunt")
-        current_puzzlehunt_setting.value = str(id_puzzlehunt)
-        db.session.add(current_puzzlehunt_setting)
-        db.session.commit()
-        flash(f'Aktivní šifrovačka nastavena na "{puzzlehunt.puzzlehunt}".', "success")
-    return redirect("/puzzlehunts")
-
-
-@app.route('/puzzlehunts/<id_puzzlehunt>/delete', methods=("POST",))
-@login_required
-def puzzlehunts_delete(id_puzzlehunt):
-    if id_puzzlehunt == str(get_current_puzzlehunt()):
-        flash(f"Aktivní šifrovačku nelze smazat.", "warning")
-        return redirect("/puzzlehunts")
-
-    puzzlehunt = Puzzlehunt.query.get(id_puzzlehunt)
-    if puzzlehunt is None:
-        flash(f"Šifrovačka s id_puzzlehunt={id_puzzlehunt} neexistuje.", "warning")
-        return redirect("/puzzlehunts")
-
-    db.session.delete(puzzlehunt)
-    db.session.commit()
-    flash(f'šifrovačka "{puzzlehunt.puzzlehunt}" smazána.', "success")
-    return redirect("/puzzlehunts")
-
+from puzzlehunts import puzzlehunts
+app.register_blueprint(puzzlehunts)
 
 # Team routes
 
