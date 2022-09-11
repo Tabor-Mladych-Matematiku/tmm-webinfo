@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
-from flask_bcrypt import Bcrypt, check_password_hash
+from flask_bcrypt import check_password_hash
 
-from db_model import db, Admin, Team
+from db_model import db, Admin, Team, bcrypt
 from config import config
-from helpers import render
+from helpers import render, get_current_puzzlehunt
 
 app = Flask(__name__)
 app.secret_key = config['secret']
@@ -27,6 +27,7 @@ app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
+bcrypt.init_app(app)
 
 # Login configuration
 
@@ -46,10 +47,6 @@ def load_user(user_id):
         return Team.query.get(int(user_id))
 
 
-bcrypt = Bcrypt()
-bcrypt.init_app(app)
-
-
 # Login routes
 
 
@@ -67,7 +64,7 @@ def login():
             login_user(Admin(), remember=True)
             return redirect(url_for('example'))
         else:
-            team: Team = Team.query.filter_by(name=user).first()
+            team: Team = Team.query.filter_by(name=user, id_puzzlehunt=get_current_puzzlehunt()).first()
             if team and check_password_hash(team.password, password):
                 login_user(team)
                 return redirect(url_for('example'))
@@ -97,6 +94,8 @@ from puzzlehunts import puzzlehunts
 app.register_blueprint(puzzlehunts)
 from puzzles import puzzles
 app.register_blueprint(puzzles)
+from teams import teams
+app.register_blueprint(teams)
 
 # Team routes
 

@@ -17,7 +17,7 @@
 
 <body>
 
-{% if user %}
+{% if user and user.is_authenticated %}
 {% include "_navigation.html" %}
 {% endif %}
 

@@ -1,8 +1,11 @@
 import abc
+
+from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 
 class User(UserMixin):
@@ -38,10 +41,21 @@ class Team(db.Model, User):
     name = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
     phone = db.Column(db.String(256), nullable=True)
+    note = db.Column(db.Text, nullable=True)
 
     @property
     def id(self):
         return self.id_team
+
+    def __init__(self, current_puzzlehunt, name, password_plain, phone, note):
+        self.id_puzzlehunt = current_puzzlehunt
+        self.name = name
+        self.set_password(password_plain)
+        self.phone = phone
+        self.note = note
+
+    def set_password(self, password_plain):
+        self.password = bcrypt.generate_password_hash(password_plain)
 
 
 class Settings(db.Model):

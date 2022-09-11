@@ -1,0 +1,23 @@
+{# templates/teams.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <h1>Týmy</h1>
+    <ul class="list-group mb-3">
+        {% for team in teams %}
+            <li class="list-group-item d-flex align-items-center">
+                <div class="flex-fill">
+                    {{ team.name }}
+                </div>
+                <div>
+                    <a class="btn btn-warning" href="/teams/{{ team.id_team }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                    <form method="post" action="/teams/{{ team.id_team }}/delete" class="d-inline" onsubmit='return confirm("Smazat \"{{ team.name }}\"?")'>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <a class="btn btn-secondary" href="/teams/new" role="button">Přidat tým</a>
+{% endblock content_admin %}
