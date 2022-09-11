@@ -16,7 +16,7 @@
                             <button type="submit" class="btn btn-primary" disabled><i class="bi bi-flag-fill"></i></button>
                         </form>
                         <a class="btn btn-warning" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}" role="button"><i class="bi bi-pencil-square"></i></a>
-                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/delete" class="d-inline">
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/delete" class="d-inline" onsubmit='return confirm("Smazat \"{{ puzzlehunt.puzzlehunt }}\"?")'>
                             <button type="submit" class="btn btn-danger" disabled><i class="bi bi-trash-fill"></i></button>
                         </form>
                     </div>
@@ -31,7 +31,7 @@
                             <button type="submit" class="btn btn-primary"><i class="bi bi-flag"></i></button>
                         </form>
                         <a class="btn btn-warning" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}" role="button"><i class="bi bi-pencil-square"></i></a>
-                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/delete" class="d-inline">
+                        <form method="post" action="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/delete" class="d-inline" onsubmit='return confirm("Smazat \"{{ puzzlehunt.puzzlehunt }}\"?")'>
                             <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
                         </form>
                     </div>

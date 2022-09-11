@@ -75,5 +75,5 @@ def puzzlehunts_delete(id_puzzlehunt):
 
     db.session.delete(puzzlehunt)
     db.session.commit()
-    flash(f'šifrovačka "{puzzlehunt.puzzlehunt}" smazána.', "success")
+    flash(f'Šifrovačka "{puzzlehunt.puzzlehunt}" smazána.', "success")
     return redirect("/puzzlehunts")
