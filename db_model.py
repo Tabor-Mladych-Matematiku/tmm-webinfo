@@ -34,7 +34,7 @@ class Team(db.Model, User):
     __tablename__ = "teams"
 
     id_team = db.Column(db.Integer, primary_key=True)
-    # id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunt.id_puzzlehunt"))
+    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunts.id_puzzlehunt"))
     name = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
     phone = db.Column(db.String(256), nullable=True)
@@ -64,3 +64,20 @@ class Puzzlehunt(db.Model):
 
     def __init__(self, puzzlehunt):
         self.puzzlehunt = puzzlehunt
+
+
+class Puzzle(db.Model):
+
+    __tablename__ = "puzzles"
+
+    id_puzzle = db.Column(db.Integer, primary_key=True)
+    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey("puzzlehunts.id_puzzlehunt"))
+    puzzle = db.Column(db.String(256))
+    assignment = db.Column(db.Text)
+    order = db.Column(db.Integer)
+
+    def __init__(self, current_puzzlehunt, puzzle, assignment, order):
+        self.id_puzzlehunt = current_puzzlehunt
+        self.puzzle = puzzle
+        self.assignment = assignment
+        self.order = order

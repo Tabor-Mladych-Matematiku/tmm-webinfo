@@ -1,0 +1,39 @@
+{# templates/puzzles.html #}
+
+{% extends "base_admin.html" %}
+{% import "_macros.html" as macros %}
+
+{% block content_admin %}
+    <form method="post">
+        <div class="row mb-3">
+            <label for="id_puzzle" class="col-3 col-form-label">id_puzzle</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="id_puzzle" name="id_puzzle" required value="{{ puzzle.id_puzzle if puzzle else "" }}" disabled>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="puzzle" class="col-3 col-form-label">Název šifry</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="puzzle" name="puzzle" required value="{{ puzzle.puzzle if puzzle else "" }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="puzzle" class="col-3 col-form-label">Zadání</label>
+            <div class="col-9">
+                {{ macros.html_textarea("assignment", puzzle.assignment if puzzle else "") }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="order" class="col-3 col-form-label">Pořadí</label>
+            <div class="col-9">
+                <input type="number" class="form-control" id="order" name="order" required value="{{ puzzle.order if puzzle else order }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="/puzzles" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+{% endblock content_admin %}

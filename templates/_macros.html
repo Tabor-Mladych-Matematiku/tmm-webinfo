@@ -1,0 +1,17 @@
+{# templates/_macros.html #}
+
+{% macro html_textarea(name, value) %}
+    <textarea type="text" class="form-control" id="{{ name }}" name="{{ name }}" >{{ value }}</textarea>
+    <div class="mb-2 mt-2">Náhled:</div>
+    <div id="{{ name }}_preview"></div>
+    <script>
+        const {{ name }}_html = document.getElementById("{{ name }}");
+        {{ name }}_html.addEventListener('input', updateValue);
+
+        function updateValue() {
+          document.getElementById("{{ name }}_preview").innerHTML = {{ name }}_html.value;
+        }
+
+        updateValue()
+    </script>
+{% endmacro %}

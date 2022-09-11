@@ -1,0 +1,23 @@
+{# templates/puzzlehunts.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <h1>Šifry</h1>
+    <ul class="list-group mb-3">
+        {% for puzzle in puzzles %}
+            <li class="list-group-item d-flex align-items-center">
+                <div class="flex-fill">
+                    {{ puzzle.puzzle }}
+                </div>
+                <div>
+                    <a class="btn btn-warning" href="/puzzles/{{ puzzle.id_puzzle }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                    <form method="post" action="/puzzles/{{ puzzle.id_puzzle }}/delete" class="d-inline" onsubmit='return confirm("Smazat \"{{ puzzle.puzzle }}\"?")'>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <a class="btn btn-secondary" href="/puzzles/new" role="button">Přidat šifru</a>
+{% endblock content_admin %}

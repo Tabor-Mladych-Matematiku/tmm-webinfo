@@ -95,6 +95,8 @@ def example():
 
 from puzzlehunts import puzzlehunts
 app.register_blueprint(puzzlehunts)
+from puzzles import puzzles
+app.register_blueprint(puzzles)
 
 # Team routes
 
