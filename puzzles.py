@@ -1,23 +1,21 @@
 from flask import request, redirect, flash, Blueprint
-from flask_login import login_required
 
 from db_model import Puzzle, db, PuzzlePrerequisite
-from helpers import render, get_current_puzzlehunt
+from helpers import render, get_current_puzzlehunt, admin_required
 
 puzzles = Blueprint('puzzles', __name__, template_folder='templates', static_folder='static')
 
 
 @puzzles.route('/puzzles')
-@login_required
+@admin_required
 def puzzles_list():
     puzzles = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).order_by(Puzzle.order).all()
     return render("puzzles.html", puzzles=puzzles)
 
 
 @puzzles.route('/puzzles/new', methods=("GET", "POST"))
-@login_required
+@admin_required
 def puzzles_new():
-    # TODO: check if user is admin
     if request.method == "POST":
         puzzle = Puzzle(get_current_puzzlehunt(), request.form["puzzle"], request.form["assignment"], request.form["order"])
         db.session.add(puzzle)
@@ -28,7 +26,7 @@ def puzzles_new():
 
 
 @puzzles.route('/puzzles/<id_puzzle>', methods=("GET", "POST"))
-@login_required
+@admin_required
 def puzzles_edit(id_puzzle):
     puzzle = Puzzle.query.get(id_puzzle)
     if puzzle is None:
@@ -47,7 +45,7 @@ def puzzles_edit(id_puzzle):
 
 
 @puzzles.route('/puzzles/<id_puzzle>/delete', methods=("POST",))
-@login_required
+@admin_required
 def puzzles_delete(id_puzzle):
     puzzle = Puzzle.query.get(id_puzzle)
     if puzzle is None:
@@ -61,7 +59,7 @@ def puzzles_delete(id_puzzle):
 
 
 @puzzles.route('/prerequisites/<id_new_puzzle>/new', methods=("GET", "POST"))
-@login_required
+@admin_required
 def prerequisites_new(id_new_puzzle):
     puzzle = Puzzle.query.get(id_new_puzzle)
     if request.method == "POST":
@@ -77,7 +75,7 @@ def prerequisites_new(id_new_puzzle):
 
 
 @puzzles.route('/prerequisites/<id_new_puzzle>/delete/<id_previous_puzzle>', methods=("POST",))
-@login_required
+@admin_required
 def prerequisites_delete(id_new_puzzle, id_previous_puzzle):
     prerequisite = PuzzlePrerequisite.query.get((id_previous_puzzle, id_new_puzzle))
     if prerequisite is not None:

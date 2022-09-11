@@ -1,5 +1,7 @@
-from flask import render_template
-from flask_login import current_user
+from functools import wraps
+
+from flask import render_template, redirect, flash
+from flask_login import current_user, login_required
 
 from db_model import Settings
 
@@ -17,3 +19,18 @@ def render(template, **kwargs):
     }
     parameters.update(kwargs)
     return render_template(template, **parameters)
+
+
+def admin_required(func):
+    """
+    If you decorate a view with this, it will ensure that the current user is admin.
+    """
+
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not current_user.is_admin:
+            flash(f"Tato stránka je dostupná pouze organizátorům.", "danger")
+            return redirect("/")
+        return func(*args, **kwargs)
+
+    return login_required(decorated_view)

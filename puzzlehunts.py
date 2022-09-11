@@ -1,15 +1,13 @@
 from flask import request, redirect, flash, Blueprint
-from flask_login import login_required
 
 from db_model import Puzzlehunt, db, Settings
-from helpers import get_current_puzzlehunt, render
-
+from helpers import get_current_puzzlehunt, render, admin_required
 
 puzzlehunts = Blueprint('puzzlehunts', __name__, template_folder='templates', static_folder='static')
 
 
 @puzzlehunts.route('/puzzlehunts')
-@login_required
+@admin_required
 def puzzlehunts_list():
     puzzlehunts = Puzzlehunt.query.all()
     current_puzzlehunt = get_current_puzzlehunt()
@@ -17,7 +15,7 @@ def puzzlehunts_list():
 
 
 @puzzlehunts.route('/puzzlehunts/new', methods=("GET", "POST"))
-@login_required
+@admin_required
 def puzzlehunts_new():
     if request.method == "POST":
         puzzlehunt = Puzzlehunt(request.form["puzzlehunt"])
@@ -28,7 +26,7 @@ def puzzlehunts_new():
 
 
 @puzzlehunts.route('/puzzlehunts/<id_puzzlehunt>', methods=("GET", "POST"))
-@login_required
+@admin_required
 def puzzlehunts_edit(id_puzzlehunt):
     puzzlehunt = Puzzlehunt.query.get(id_puzzlehunt)
     if puzzlehunt is None:
@@ -45,7 +43,7 @@ def puzzlehunts_edit(id_puzzlehunt):
 
 
 @puzzlehunts.route('/puzzlehunts/<id_puzzlehunt>/activate', methods=("POST",))
-@login_required
+@admin_required
 def puzzlehunts_activate(id_puzzlehunt):
     puzzlehunt = Puzzlehunt.query.get(id_puzzlehunt)
     if puzzlehunt is None:
@@ -62,7 +60,7 @@ def puzzlehunts_activate(id_puzzlehunt):
 
 
 @puzzlehunts.route('/puzzlehunts/<id_puzzlehunt>/delete', methods=("POST",))
-@login_required
+@admin_required
 def puzzlehunts_delete(id_puzzlehunt):
     if id_puzzlehunt == str(get_current_puzzlehunt()):
         flash(f"Aktivní šifrovačku nelze smazat.", "warning")

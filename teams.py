@@ -1,21 +1,20 @@
 from flask import request, redirect, flash, Blueprint
-from flask_login import login_required
 
 from db_model import Team, db
-from helpers import render, get_current_puzzlehunt
+from helpers import render, get_current_puzzlehunt, admin_required
 
 teams = Blueprint('teams', __name__, template_folder='templates', static_folder='static')
 
 
 @teams.route('/teams')
-@login_required
+@admin_required
 def teams_list():
     teams = Team.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).order_by(Team.name).all()
     return render("teams.html", teams=teams)
 
 
 @teams.route('/teams/new', methods=("GET", "POST"))
-@login_required
+@admin_required
 def teams_new():
     if request.method == "POST":
         team = Team(get_current_puzzlehunt(), request.form["name"], request.form["password"], request.form["phone"], request.form["note"])
@@ -26,7 +25,7 @@ def teams_new():
 
 
 @teams.route('/teams/<id_team>', methods=("GET", "POST"))
-@login_required
+@admin_required
 def teams_edit(id_team):
     team = Team.query.get(id_team)
     if team is None:
@@ -47,7 +46,7 @@ def teams_edit(id_team):
 
 
 @teams.route('/teams/<id_team>/delete', methods=("POST",))
-@login_required
+@admin_required
 def teams_delete(id_team):
     team = Team.query.get(id_team)
     if team is None:
