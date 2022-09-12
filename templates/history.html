@@ -1,0 +1,28 @@
+{# templates/history.html #}
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Historie: {{ team.name }}</h1>
+    <ul class="list-group mb-3">
+        {% for entry in history %}
+            <li class="list-group-item d-flex align-items-center">
+                <div style="width: 60px">
+                    {{ entry.timestamp.strftime("%H:%M") }}
+                </div>
+                <div class="flex-fill">
+                    {{ entry.icon_html|safe }}
+                    {{ entry.history_entry_html|safe }}
+                </div>
+                {% if current_user.is_admin %}
+                    <div>
+                        <a class="btn btn-warning" href="{{ entry.edit_url }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="{{ entry.edit_url }}/delete" class="d-inline" onsubmit='return confirm("Smazat \"{{ entry.history_entry_html }}\"?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

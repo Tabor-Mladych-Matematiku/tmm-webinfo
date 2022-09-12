@@ -25,7 +25,7 @@
         <tbody>
         {% for team in teams %}
             <tr>
-                <th scope="row">{{ team.name }}</th>
+                <th scope="row"><a href="/history/{{ team.id_team }}">{{ team.name }}</a></th>
                 {% for puzzle in puzzles %}
                     <td {{ "class=bg-warning" if puzzle.id_puzzle not in solve_times[team.id_team] }}>
                         {{ arrival_times[team.id_team][puzzle.id_puzzle] }}

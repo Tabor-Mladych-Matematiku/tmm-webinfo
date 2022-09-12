@@ -1,4 +1,3 @@
-import abc
 from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
@@ -191,6 +190,18 @@ class TeamArrived(db.Model):
         self.id_arrival_code = id_arrival_code
         self.timestamp = datetime.now()
 
+    @property
+    def icon_html(self):
+        return '<i class="bi bi-file-earmark-richtext-fill text-info"></i>'
+
+    @property
+    def history_entry_html(self):
+        return f'Příchod: {self.puzzle.puzzle}'
+
+    @property
+    def edit_url(self):
+        return f'/history/{self.id_team}/arrival/{self.id_puzzle}'
+
 
 class TeamSolved(db.Model):
 
@@ -210,3 +221,15 @@ class TeamSolved(db.Model):
         self.id_puzzle = id_puzzle
         self.id_solution_code = id_solution_code
         self.timestamp = datetime.now()
+
+    @property
+    def icon_html(self):
+        return '<i class="bi bi-check-circle-fill text-success"></i>'
+
+    @property
+    def history_entry_html(self):
+        return f'Vyřešeno: {self.puzzle.puzzle}'
+
+    @property
+    def edit_url(self):
+        return f'/history/{self.id_team}/solve/{self.id_puzzle}'

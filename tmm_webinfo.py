@@ -69,3 +69,5 @@ app.register_blueprint(progress_table)
 
 from journey import journey
 app.register_blueprint(journey)
+from history import history_blueprint
+app.register_blueprint(history_blueprint)

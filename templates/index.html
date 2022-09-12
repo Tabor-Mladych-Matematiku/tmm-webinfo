@@ -2,7 +2,10 @@
 
 {% extends "base.html" %}
 
-{% block content %}
+{% block content_main %}
+    <main class="container">
+    {% include "_flashes.html" %}
+
     <form method="post" action="/submit">
         <div class="row mb-3">
             <div class="col d-flex">
@@ -58,4 +61,6 @@
             </div>
         </div>
     {% endfor %}
-{% endblock content %}
+
+    </main>
+{% endblock content_main %}

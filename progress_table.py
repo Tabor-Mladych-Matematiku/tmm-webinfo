@@ -18,7 +18,7 @@ def progress():
     arrivals: List[TeamArrived] = TeamArrived.query\
         .filter(TeamArrived.id_team.in_(team_ids)).all()
     solves: List[TeamSolved] = TeamSolved.query\
-        .filter(TeamArrived.id_team.in_(team_ids)).all()
+        .filter(TeamSolved.id_team.in_(team_ids)).all()
 
     arrival_times = defaultdict(dict)
     for arrival in arrivals:

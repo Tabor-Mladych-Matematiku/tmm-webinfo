@@ -11,6 +11,7 @@
                     {{ team.name }}
                 </div>
                 <div>
+                    <a class="btn btn-primary" href="/history/{{ team.id_team }}" role="button"><i class="bi bi-clock-history"></i></a>
                     <a class="btn btn-warning" href="/teams/{{ team.id_team }}" role="button"><i class="bi bi-pencil-square"></i></a>
                     <form method="post" action="/teams/{{ team.id_team }}/delete" class="d-inline" onsubmit='return confirm("Smazat \"{{ team.name }}\"?")'>
                         <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>

@@ -83,7 +83,7 @@ def submit_code():
             team_arrived = TeamArrived(id_team, arrival.id_puzzle, arrival.id_arrival_code)
             db.session.add(team_arrived)
             db.session.commit()
-            flash(f'Kód stanoviště "{arrival.code}" je správný.', "success")
+            flash(f'Kód stanoviště "{arrival.code}" je správný. Šifra "{arrival.puzzle_name}" otevřena.', "success")
             return redirect("/")
 
     # TODO: check puzzlehunt global codes

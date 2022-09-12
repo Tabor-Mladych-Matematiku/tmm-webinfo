@@ -1,0 +1,33 @@
+{# templates/history_entry_edit.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <h2>{{ heading }}</h2>
+    <form method="post">
+        <div class="row mb-3">
+            <label for="team" class="col-3 col-form-label">Tým</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="team" name="team" disabled value="{{ entry.team.name }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="puzzle" class="col-3 col-form-label">Šifra</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="puzzle" name="puzzle" disabled value="{{ entry.puzzle.puzzle }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="timestamp" class="col-3 col-form-label">Čas</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="timestamp" name="timestamp" required value="{{ entry.timestamp.strftime('%d.%m.%Y %H:%M:%S') }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="{{ back_url }}" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+{% endblock content_admin %}
