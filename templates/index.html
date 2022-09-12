@@ -16,4 +16,30 @@
             </div>
         </div>
     </form>
+
+    {% for puzzle in open_puzzles %}
+        <div class="row">
+            <div class="col">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ puzzle.puzzle }}</h5>
+                        <div>{{ puzzle.assignment|safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% for puzzle in solved_puzzles %}
+        <div class="row">
+            <div class="col">
+                <div class="card text-bg-light mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ puzzle.puzzle }}</h5>
+                        <div>{{ puzzle.assignment|safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock content %}
