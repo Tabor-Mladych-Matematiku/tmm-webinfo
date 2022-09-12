@@ -3,6 +3,7 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship, backref
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -177,11 +178,17 @@ class TeamArrived(db.Model):
 
     id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
     id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
+    id_arrival_code = db.Column(db.Integer, db.ForeignKey(ArrivalCode.id_arrival_code, ondelete='RESTRICT'))
     timestamp = db.Column(db.DateTime)
 
-    def __init__(self, id_team, id_puzzle):
+    puzzle = relationship("Puzzle", backref=backref("team_arrivals", uselist=False))
+    arrival_code = relationship("ArrivalCode", backref=backref("team_arrivals", uselist=False))
+    team = relationship("Team", backref=backref("team_arrivals", uselist=False))
+
+    def __init__(self, id_team, id_puzzle, id_arrival_code):
         self.id_team = id_team
         self.id_puzzle = id_puzzle
+        self.id_arrival_code = id_arrival_code
         self.timestamp = datetime.now()
 
 
@@ -191,9 +198,15 @@ class TeamSolved(db.Model):
 
     id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
     id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
+    id_solution_code = db.Column(db.Integer, db.ForeignKey(SolutionCode.id_solution_code, ondelete='RESTRICT'))
     timestamp = db.Column(db.DateTime)
 
-    def __init__(self, id_team, id_puzzle):
+    puzzle = relationship("Puzzle", backref=backref("team_solves", uselist=False))
+    solution_code = relationship("SolutionCode", backref=backref("team_solves", uselist=False))
+    team = relationship("Team", backref=backref("team_solves", uselist=False))
+
+    def __init__(self, id_team, id_puzzle, id_solution_code):
         self.id_team = id_team
         self.id_puzzle = id_puzzle
+        self.id_solution_code = id_solution_code
         self.timestamp = datetime.now()

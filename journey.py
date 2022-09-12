@@ -1,6 +1,7 @@
 from typing import List
-from flask import request, redirect, Blueprint
+from flask import request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
+from sqlalchemy import select
 
 from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db
 from helpers import render, get_current_puzzlehunt
@@ -14,19 +15,23 @@ def index():
     if current_user.is_admin:
         return redirect("/puzzlehunts")  # TODO: different page?
 
-    solved_puzzles = Puzzle.query\
-        .filter_by(id_puzzlehunt=get_current_puzzlehunt())\
-        .join(TeamSolved)\
-        .all()
-    open_puzzles = Puzzle.query\
-        .filter_by(id_puzzlehunt=get_current_puzzlehunt())\
+    team_solves_with_arrivals = TeamSolved.query\
+        .filter_by(id_team=current_user.id_team)\
+        .join(Puzzle)\
         .join(TeamArrived)\
+        .with_entities(TeamSolved, TeamArrived)\
+        .all()
+    team_arrivals = TeamArrived.query\
+        .filter_by(id_team=current_user.id_team)\
+        .join(Puzzle)\
         .filter(Puzzle.id_puzzle.not_in(
             TeamSolved.query
             .filter_by(id_team=current_user.id_team)
             .with_entities(TeamSolved.id_puzzle))
-        ).all()
-    return render("index.html", solved_puzzles=solved_puzzles, open_puzzles=open_puzzles)
+        )\
+        .all()
+
+    return render("index.html", solves=team_solves_with_arrivals, arrivals=team_arrivals)
 
 
 @journey.route("/submit", methods=("POST",))
@@ -45,10 +50,10 @@ def submit_code():
     for solution in open_puzzles_solution_codes:
         if solution.code == code:
             # TODO: repeated code
-            team_solved = TeamSolved(current_user.id_team, solution.id_puzzle)
+            team_solved = TeamSolved(current_user.id_team, solution.id_puzzle, solution.id_solution_code)
             db.session.add(team_solved)
             db.session.commit()
-            # TODO: flash message
+            flash(f'Řešení "{solution.code}" je správně.', "success")
 
     # check arrival codes for not open puzzles
     # TODO: restrict by prerequisites
@@ -62,10 +67,10 @@ def submit_code():
     for arrival in not_open_puzzles_codes:
         if arrival.code == code:
             # TODO: repeated code
-            team_arrived = TeamArrived(current_user.id_team, arrival.id_puzzle)
+            team_arrived = TeamArrived(current_user.id_team, arrival.id_puzzle, arrival.id_arrival_code)
             db.session.add(team_arrived)
             db.session.commit()
-            # TODO: flash message
+            flash(f'Kód stanoviště "{arrival.code}" je správný.', "success")
 
     # TODO: check puzzlehunt global codes
 

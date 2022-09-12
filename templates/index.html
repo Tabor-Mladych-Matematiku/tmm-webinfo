@@ -17,26 +17,42 @@
         </div>
     </form>
 
-    {% for puzzle in open_puzzles %}
+    {% for arrival in arrivals %}
         <div class="row">
             <div class="col">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ puzzle.puzzle }}</h5>
-                        <div>{{ puzzle.assignment|safe }}</div>
+                        <h5 class="card-title">{{ arrival.puzzle.puzzle }}</h5>
+                        <div>{{ arrival.puzzle.assignment|safe }}</div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div>Příchod: {{ arrival.timestamp.strftime("%H:%M") }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
+                        {% if arrival.arrival_code.message %}
+                            <div>{{ arrival.arrival_code.message|safe }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     {% endfor %}
 
-    {% for puzzle in solved_puzzles %}
+    {% for solve, arrival in solves %}
         <div class="row">
             <div class="col">
                 <div class="card text-bg-light mb-3">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ puzzle.puzzle }}</h5>
-                        <div>{{ puzzle.assignment|safe }}</div>
+                        <h5 class="card-title"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ solve.puzzle.puzzle }}</h5>
+                        <div>{{ solve.puzzle.assignment|safe }}</div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div>Příchod: {{ arrival.timestamp.strftime("%H:%M") }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
+                        {% if arrival.arrival_code.message %}
+                            <div>{{ arrival.arrival_code.message|safe }}</div>
+                        {% endif %}
+                        <div class="mt-2">Odchod: {{ solve.timestamp.strftime("%H:%M") }}, řešení: "{{ solve.solution_code.code }}"</div>
+                        {% if solve.solution_code.message %}
+                            <div>{{ solve.solution_code.message|safe }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
