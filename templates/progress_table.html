@@ -1,0 +1,42 @@
+{# templates/puzzles.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <h1>Průběh hry</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            {% for puzzle in puzzles %}
+                <th scope="col" colspan="3">{{ puzzle.puzzle }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th scope="col">Tým</th>
+            {% for puzzle in puzzles %}
+                <th scope="col">Příchod</th>
+                <th scope="col">Odchod</th>
+                <th scope="col">Nápovědy</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for team in teams %}
+            <tr>
+                <th scope="row">{{ team.name }}</th>
+                {% for puzzle in puzzles %}
+                    <td {{ "class=bg-warning" if puzzle.id_puzzle not in solve_times[team.id_team] }}>
+                        {{ arrival_times[team.id_team][puzzle.id_puzzle] }}
+                    </td>
+                    <td {{ "class=bg-success" if puzzle.id_puzzle in solve_times[team.id_team] }}>
+                        {{ solve_times[team.id_team][puzzle.id_puzzle] }}
+                    </td>
+                    <td></td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content_admin %}

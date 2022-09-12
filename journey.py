@@ -48,6 +48,7 @@ def submit_code():
             team_solved = TeamSolved(current_user.id_team, solution.id_puzzle)
             db.session.add(team_solved)
             db.session.commit()
+            # TODO: flash message
 
     # check arrival codes for not open puzzles
     # TODO: restrict by prerequisites
@@ -64,6 +65,7 @@ def submit_code():
             team_arrived = TeamArrived(current_user.id_team, arrival.id_puzzle)
             db.session.add(team_arrived)
             db.session.commit()
+            # TODO: flash message
 
     # TODO: check puzzlehunt global codes
 
