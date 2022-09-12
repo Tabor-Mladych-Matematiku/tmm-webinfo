@@ -1,6 +1,7 @@
 from functools import wraps
+from urllib.parse import urlparse, urljoin
 
-from flask import render_template, redirect, flash
+from flask import render_template, redirect, flash, request
 from flask_login import current_user, login_required
 
 from db_model import Settings
@@ -34,3 +35,14 @@ def admin_required(func):
         return func(*args, **kwargs)
 
     return login_required(decorated_view)
+
+
+def is_safe_url(target):
+    """
+    Ensures that a redirect target will lead to the same server.
+    Taken from: <https://web.archive.org/web/20120517003641/http://flask.pocoo.org/snippets/62/>
+    """
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+        ref_url.netloc == test_url.netloc
