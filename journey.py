@@ -3,7 +3,7 @@ from flask import request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
 
 from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code, \
-    TeamSubmittedCode
+    TeamSubmittedCode, Hint, TeamUsedHint
 from helpers import render, get_current_puzzlehunt
 
 journey = Blueprint('journey', __name__, template_folder='templates', static_folder='static')
@@ -108,4 +108,28 @@ def submit_code():
             return redirect("/")
 
     flash(f'Kód "{code}" není správný (nebo už byl zadán).', "danger")
+    return redirect("/")
+
+
+@journey.route("/hint/<id_hint>", methods=("POST",))
+@login_required
+def use_hint(id_hint):
+    id_team = current_user.id_team
+
+    hint = Hint.query.get(id_hint)
+    if hint is None:
+        flash(f"Nápověda neexistuje.", "warning")
+        return redirect("/")
+    team_arrival = TeamArrived.query.get((id_team, hint.id_puzzle))
+    if team_arrival is None:
+        flash(f"Nejprve zadejte kód stanoviště.", "warning")
+        return redirect("/")
+    if not hint.is_open(team_arrival.timestamp):
+        flash(f"Nápověda ještě není k dispozici.", "warning")
+        return redirect("/")
+
+    team_used_hint = TeamUsedHint(id_team, id_hint)
+    db.session.add(team_used_hint)
+    db.session.commit()
+    flash(f'Nápověda použita.', "success")
     return redirect("/")

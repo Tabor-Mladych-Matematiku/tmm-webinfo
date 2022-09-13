@@ -1,6 +1,5 @@
 from datetime import datetime
-
-from flask import redirect, Blueprint, request
+from flask import redirect, Blueprint, request, flash
 from flask_login import login_required, current_user
 
 from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code
@@ -57,6 +56,21 @@ def arrival_edit(id_team, id_puzzle):
         return render("history_entry_edit.html", heading="Upravit čas příchodu", back_url=f"/history/{id_team}", entry=arrival)
 
 
+@history_blueprint.route('/history/<id_team>/arrival/<id_puzzle>/delete', methods=("POST",))
+@admin_required
+def arrival_delete(id_team, id_puzzle):
+    arrival = TeamArrived.query.get((id_team, id_puzzle))
+    if arrival is None:
+        flash(f'Příchod neexistuje.', "danger")
+    else:
+        team = arrival.team
+        puzzle = arrival.puzzle
+        db.session.delete(arrival)
+        db.session.commit()
+        flash(f'Příchod týmu "{team.name}" na šifru "{puzzle.puzzle}" smazán.', "success")
+    return redirect(f"/history/{id_team}")
+
+
 @history_blueprint.route('/history/<id_team>/solve/<id_puzzle>', methods=("GET", "POST"))
 @admin_required
 def solve_edit(id_team, id_puzzle):
@@ -71,6 +85,21 @@ def solve_edit(id_team, id_puzzle):
         return render("history_entry_edit.html", heading="Upravit čas vyřešení", back_url=f"/history/{id_team}", entry=solve)
 
 
+@history_blueprint.route('/history/<id_team>/solve/<id_puzzle>/delete', methods=("POST",))
+@admin_required
+def solve_delete(id_team, id_puzzle):
+    solve = TeamSolved.query.get((id_team, id_puzzle))
+    if solve is None:
+        flash(f'Vyřešení neexistuje.', "danger")
+    else:
+        team = solve.team
+        puzzle = solve.puzzle
+        db.session.delete(solve)
+        db.session.commit()
+        flash(f'Vyřešení šifry "{puzzle.puzzle}" týmem "{team.name}" smazáno.', "success")
+    return redirect(f"/history/{id_team}")
+
+
 @history_blueprint.route('/history/<id_team>/code/<id_code>', methods=("GET", "POST"))
 @admin_required
 def code_submit_edit(id_team, id_code):
@@ -83,3 +112,18 @@ def code_submit_edit(id_team, id_code):
         return redirect(f"/history/{id_team}")
     else:
         return render("history_entry_edit.html", heading="Upravit čas zadání kódu", back_url=f"/history/{id_team}", entry=code_submit)
+
+
+@history_blueprint.route('/history/<id_team>/code/<id_code>/delete', methods=("POST",))
+@admin_required
+def code_submit_delete(id_team, id_code):
+    code_submit = TeamSubmittedCode.query.get((id_team, id_code))
+    if code_submit is None:
+        flash(f'Zadání kódu neexistuje.', "danger")
+    else:
+        team = code_submit.team
+        code = code_submit.code
+        db.session.delete(code_submit)
+        db.session.commit()
+    flash(f'Zadání kódu "{code.code}" týmem "{team.name}" smazáno.', "success")
+    return redirect(f"/history/{id_team}")

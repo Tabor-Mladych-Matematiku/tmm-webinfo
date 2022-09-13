@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
@@ -105,6 +105,23 @@ class Puzzle(db.Model):
             .filter_by(id_new_puzzle=self.id_puzzle).all()
         return p
 
+    def _get_used_hints(self, id_team):
+        return TeamUsedHint.query\
+            .filter_by(id_team=id_team)\
+            .join(Hint)\
+            .filter(Hint.id_puzzle == self.id_puzzle)
+
+    def get_used_hints(self, id_team):
+        return self._get_used_hints(id_team).with_entities(Hint).all()
+
+    def get_available_hints(self, id_team):
+        return Hint.query \
+            .filter(Hint.id_puzzle == self.id_puzzle) \
+            .filter(Hint.id_hint.not_in(
+                self._get_used_hints(id_team)
+                .with_entities(Hint.id_hint)))\
+            .all()
+
 
 class PuzzlePrerequisite(db.Model):
 
@@ -169,7 +186,7 @@ class SolutionCode(db.Model):
 
 class HistoryEntry(Abstract):
 
-    __required_attributes__ = ["icon_html", "history_entry_html", "edit_url"]
+    __required_attributes__ = ["icon_html", "history_entry_html", "edit_url", "timestamp"]
 
 
 class TeamArrived(db.Model, HistoryEntry):
@@ -282,3 +299,32 @@ class Hint(db.Model):
         self.order = order
         self.minutes_to_open = minutes_to_open
         self.hint = hint
+
+    def is_open(self, arrival_time: datetime):
+        return datetime.now() > arrival_time + timedelta(minutes=self.minutes_to_open)
+
+    def time_to_hint(self, arrival_time: datetime) -> timedelta:
+        time_since_arrival = datetime.now() - arrival_time
+        return timedelta(minutes=self.minutes_to_open) - time_since_arrival
+
+    def time_to_hint_format(self, arrival_time: datetime):
+        time_to_hint = self.time_to_hint(arrival_time)
+        minutes, seconds = divmod(time_to_hint.seconds, 60)
+        return f"{minutes} minut {seconds} sekund"
+
+
+class TeamUsedHint(db.Model):  # TODO: HistoryEntry
+
+    __tablename__ = "team_used_hints"
+
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_hint = db.Column(db.Integer, db.ForeignKey(Hint.id_hint, ondelete='RESTRICT'), primary_key=True)
+    timestamp = db.Column(db.DateTime)
+
+    team = relationship("Team", backref=backref("team_used_hints", uselist=False))
+    hint = relationship("Hint", backref=backref("team_used_hints", uselist=False))
+
+    def __init__(self, id_team, id_hint):
+        self.id_team = id_team
+        self.id_hint = id_hint
+        self.timestamp = datetime.now()

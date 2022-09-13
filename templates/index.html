@@ -31,6 +31,22 @@
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-file-earmark-richtext-fill text-info me-2"></i>{{ arrival.puzzle.puzzle }}</h5>
                         <div>{{ arrival.puzzle.assignment|safe }}</div>
+
+                        {% for hint in arrival.puzzle.get_used_hints(current_user.id_team) %}
+                            <h6 class="mt-2">Nápověda {{ hint.order }}</h6>
+                            <div>{{ hint.hint|safe }}</div>
+                        {% endfor %}
+
+                        {% for hint in arrival.puzzle.get_available_hints(current_user.id_team) %}
+                            <h6 class="mt-2">Nápověda {{ hint.order }}</h6>
+                            {% if hint.is_open(arrival.timestamp) %}
+                                <form method="post" action="/hint/{{ hint.id_hint }}" class="d-inline" onsubmit='return confirm("Použít nápovědu?")'>
+                                    <button type="submit" class="btn btn-primary">Použít nápovědu</button>
+                                </form>
+                            {% else %}
+                                <button type="button" class="btn btn-primary" disabled>Za {{ hint.time_to_hint_format(arrival.timestamp) }}</button>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="card-footer text-muted">
                         <div>Příchod: {{ arrival.timestamp.strftime("%H:%M") }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
