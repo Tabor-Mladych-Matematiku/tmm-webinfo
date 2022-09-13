@@ -2,7 +2,7 @@ from typing import List
 from flask import request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
 
-from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite
+from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code
 from helpers import render, get_current_puzzlehunt
 
 journey = Blueprint('journey', __name__, template_folder='templates', static_folder='static')
@@ -83,7 +83,7 @@ def submit_code():
             team_arrived = TeamArrived(id_team, arrival.id_puzzle, arrival.id_arrival_code)
             db.session.add(team_arrived)
             db.session.commit()
-            flash(f'Kód stanoviště "{arrival.code}" je správný. Šifra "{arrival.puzzle_name}" otevřena.', "success")
+            flash(f'Kód stanoviště "{arrival.code}" je správný. Šifra "{arrival.puzzle.puzzle}" otevřena.', "success")
             return redirect("/")
 
     # TODO: check puzzlehunt global codes

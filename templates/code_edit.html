@@ -6,11 +6,11 @@
 {% block content_admin %}
     <h2>{{ heading }}</h2>
     <form method="post">
-        {% if puzzle_name %}
+        {% if puzzle %}
             <div class="row mb-3">
             <label for="puzzle" class="col-3 col-form-label">Šifra</label>
             <div class="col-9">
-                <input type="text" class="form-control" id="puzzle" name="puzzle" disabled value="{{ puzzle_name }}">
+                <input type="text" class="form-control" id="puzzle" name="puzzle" disabled value="{{ puzzle.puzzle }}">
             </div>
         </div>
         {% endif %}

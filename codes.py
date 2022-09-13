@@ -76,7 +76,7 @@ def arrival_codes_new(id_puzzle):
         db.session.add(code)
         db.session.commit()
         return redirect(f"/puzzles/{id_puzzle}")
-    return render("code_edit.html", heading="Přidat kód na otevření šifry", back_url=f"/puzzles/{id_puzzle}", puzzle_name=puzzle.puzzle)
+    return render("code_edit.html", heading="Přidat kód na otevření šifry", back_url=f"/puzzles/{id_puzzle}", puzzle=puzzle)
 
 
 @codes.route('/puzzles/<id_puzzle>/arrival_codes/<id_arrival_code>', methods=("GET", "POST"))
@@ -98,7 +98,7 @@ def arrival_codes_edit(id_puzzle, id_arrival_code):
         db.session.commit()
         return redirect(f"/puzzles/{id_puzzle}")
     else:
-        return render("code_edit.html", heading="Upravit kód", back_url=f"/puzzles/{id_puzzle}", code=arrival_code, puzzle_name=puzzle.puzzle)
+        return render("code_edit.html", heading="Upravit kód", back_url=f"/puzzles/{id_puzzle}", code=arrival_code, puzzle=puzzle)
 
 
 @codes.route('/puzzles/<id_puzzle>/arrival_codes/<id_arrival_code>/delete', methods=("POST",))
@@ -135,7 +135,7 @@ def solution_codes_new(id_puzzle):
         db.session.add(code)
         db.session.commit()
         return redirect(f"/puzzles/{id_puzzle}")
-    return render("code_edit.html", heading="Přidat řešení šifry", back_url=f"/puzzles/{id_puzzle}", puzzle_name=puzzle.puzzle)
+    return render("code_edit.html", heading="Přidat řešení šifry", back_url=f"/puzzles/{id_puzzle}", puzzle=puzzle)
 
 
 @codes.route('/puzzles/<id_puzzle>/solution_codes/<id_solution_code>', methods=("GET", "POST"))
@@ -157,7 +157,7 @@ def solution_codes_edit(id_puzzle, id_solution_code):
         db.session.commit()
         return redirect(f"/puzzles/{id_puzzle}")
     else:
-        return render("code_edit.html", heading="Upravit řešení", back_url=f"/puzzles/{id_puzzle}", code=solution_code, puzzle_name=puzzle.puzzle)
+        return render("code_edit.html", heading="Upravit řešení", back_url=f"/puzzles/{id_puzzle}", code=solution_code, puzzle=puzzle)
 
 
 @codes.route('/puzzles/<id_puzzle>/solution_codes/<id_solution_code>/delete', methods=("POST",))

@@ -4,6 +4,8 @@ from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, backref
 
+from abstract import Abstract
+
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
@@ -30,7 +32,9 @@ class Puzzlehunt(db.Model):
         self.puzzlehunt = puzzlehunt
 
 
-class User(UserMixin):
+class User(UserMixin, Abstract):
+
+    __required_attributes__ = ["name"]
 
     @property
     def is_admin(self):
@@ -128,10 +132,6 @@ class Code(db.Model):
         self.code = code
         self.message = message
 
-    @property
-    def puzzle_name(self):
-        return None
-
 
 class ArrivalCode(db.Model):
 
@@ -142,14 +142,12 @@ class ArrivalCode(db.Model):
     code = db.Column(db.String(256))
     message = db.Column(db.Text)
 
+    puzzle = relationship("Puzzle", backref=backref("arrival_codes", uselist=False))
+
     def __init__(self, puzzle, code, message):
         self.id_puzzle = puzzle
         self.code = code
         self.message = message
-
-    @property
-    def puzzle_name(self):
-        return Puzzle.query.get(self.id_puzzle).puzzle
 
 
 class SolutionCode(db.Model):
@@ -161,17 +159,20 @@ class SolutionCode(db.Model):
     code = db.Column(db.String(256))
     message = db.Column(db.Text)
 
+    puzzle = relationship("Puzzle", backref=backref("solution_codes", uselist=False))
+
     def __init__(self, puzzle, code, message):
         self.id_puzzle = puzzle
         self.code = code
         self.message = message
 
-    @property
-    def puzzle_name(self):
-        return Puzzle.query.get(self.id_puzzle).puzzle
+
+class HistoryEntry(Abstract):
+
+    __required_attributes__ = ["icon_html", "history_entry_html", "edit_url"]
 
 
-class TeamArrived(db.Model):
+class TeamArrived(db.Model, HistoryEntry):
 
     __tablename__ = "team_arrivals"
 
@@ -203,7 +204,7 @@ class TeamArrived(db.Model):
         return f'/history/{self.id_team}/arrival/{self.id_puzzle}'
 
 
-class TeamSolved(db.Model):
+class TeamSolved(db.Model, HistoryEntry):
 
     __tablename__ = "team_solves"
 
@@ -233,3 +234,32 @@ class TeamSolved(db.Model):
     @property
     def edit_url(self):
         return f'/history/{self.id_team}/solve/{self.id_puzzle}'
+
+
+class TeamSubmittedCode(db.Model, HistoryEntry):
+
+    __tablename__ = "team_submitted_codes"
+
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_code = db.Column(db.Integer, db.ForeignKey(Code.id_code, ondelete='RESTRICT'), primary_key=True)
+    timestamp = db.Column(db.DateTime)
+
+    code = relationship("Code", backref=backref("team_submitted_codes", uselist=False))
+    team = relationship("Team", backref=backref("team_submitted_codes", uselist=False))
+
+    def __init__(self, id_team, id_code):
+        self.id_team = id_team
+        self.id_puzzle = id_code
+        self.timestamp = datetime.now()
+
+    @property
+    def icon_html(self):
+        return '<i class="bi bi-file-earmark-code-fill text-primary"></i>'
+
+    @property
+    def history_entry_html(self):
+        return f'Zadán kód: "{self.code.code}"'
+
+    @property
+    def edit_url(self):
+        return f'/history/{self.id_team}/code/{self.id_code}'
