@@ -263,3 +263,22 @@ class TeamSubmittedCode(db.Model, HistoryEntry):
     @property
     def edit_url(self):
         return f'/history/{self.id_team}/code/{self.id_code}'
+
+
+class Hint(db.Model):
+
+    __tablename__ = "hints"
+
+    id_hint = db.Column(db.Integer, primary_key=True)
+    id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'))
+    order = db.Column(db.Integer)
+    minutes_to_open = db.Column(db.Integer)
+    hint = db.Column(db.Text)
+
+    puzzle = relationship("Puzzle", backref=backref("hints", uselist=False))
+
+    def __init__(self, id_puzzle, order, minutes_to_open, hint):
+        self.id_puzzle = id_puzzle
+        self.order = order
+        self.minutes_to_open = minutes_to_open
+        self.hint = hint

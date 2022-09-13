@@ -60,6 +60,8 @@ from teams import teams
 app.register_blueprint(teams)
 from codes import codes
 app.register_blueprint(codes)
+from hints import hints
+app.register_blueprint(hints)
 from progress_table import progress_table
 app.register_blueprint(progress_table)
 

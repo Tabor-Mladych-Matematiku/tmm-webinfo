@@ -38,24 +38,6 @@
     </form>
 
     {% if puzzle %}
-        <h2>Závislosti</h2>
-        <p>Šifry, které musí být vyřešené, aby se tahle zpřístupnila.</p>
-        <ul class="list-group mb-3">
-            {% for prerequisite in puzzle.get_prerequisites() %}
-                <li class="list-group-item d-flex align-items-center">
-                    <div class="flex-fill">
-                        {{ prerequisite.puzzle }}
-                    </div>
-                    <div>
-                        <form method="post" action="/prerequisites/{{ puzzle.id_puzzle }}/prerequisites/{{ prerequisite.id_puzzle }}/delete" class="d-inline" onsubmit='return confirm("Smazat závislost na \"{{ prerequisite.puzzle }}\"?")'>
-                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
-                        </form>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-        <a class="btn btn-secondary" href="/prerequisites/{{ puzzle.id_puzzle }}/new" role="button">Přidat šifru</a>
-
         <h2>Otevírací kódy</h2>
         <ul class="list-group mb-3">
             {% for code in arrival_codes %}
@@ -91,5 +73,44 @@
             {% endfor %}
         </ul>
         <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/solution_codes/new" role="button">Přidat řešení</a>
+
+        <h2>Nápovědy</h2>
+        <ul class="list-group mb-3">
+            {% for hint in hints %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div style="width: 150px">
+                        {{ hint.order }}. (po {{ hint.minutes_to_open }} minutách)
+                    </div>
+                    <div class="flex-fill">
+                        {{ hint.hint|safe }}
+                    </div>
+                    <div>
+                        <a class="btn btn-warning" href="/puzzles/{{ puzzle.id_puzzle }}/hints/{{ hint.id_hint }}" role="button"><i class="bi bi-pencil-square"></i></a>
+                        <form method="post" action="/puzzles/{{ puzzle.id_puzzle }}/hints/{{ hint.id_hint }}/delete" class="d-inline" onsubmit='return confirm("Smazat {{ hint.order }}. nápovědu?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/hints/new" role="button">Přidat nápovědu</a>
+
+        <h2>Závislosti</h2>
+        <p>Šifry, které musí být vyřešené, aby se tahle zpřístupnila.</p>
+        <ul class="list-group mb-3">
+            {% for prerequisite in puzzle.get_prerequisites() %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-fill">
+                        {{ prerequisite.puzzle }}
+                    </div>
+                    <div>
+                        <form method="post" action="/puzzles/{{ puzzle.id_puzzle }}/prerequisites/{{ prerequisite.id_puzzle }}/delete" class="d-inline" onsubmit='return confirm("Smazat závislost na \"{{ prerequisite.puzzle }}\"?")'>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-secondary mb-3" href="/puzzles/{{ puzzle.id_puzzle }}/prerequisites/new" role="button">Přidat šifru</a>
     {% endif %}
 {% endblock content_admin %}

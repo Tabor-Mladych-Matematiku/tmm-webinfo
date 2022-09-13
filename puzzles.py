@@ -3,6 +3,7 @@ from flask import request, redirect, flash, Blueprint
 from codes import get_arrival_codes, get_solution_codes
 from db_model import Puzzle, db, PuzzlePrerequisite
 from helpers import render, get_current_puzzlehunt, admin_required
+from hints import get_hints
 
 puzzles = Blueprint('puzzles', __name__, template_folder='templates', static_folder='static')
 
@@ -44,7 +45,8 @@ def puzzles_edit(id_puzzle):
     else:
         arrival_codes = get_arrival_codes(id_puzzle)
         solution_codes = get_solution_codes(id_puzzle)
-        return render("puzzle_edit.html", puzzle=puzzle, arrival_codes=arrival_codes, solution_codes=solution_codes)
+        hints = get_hints(id_puzzle)
+        return render("puzzle_edit.html", puzzle=puzzle, arrival_codes=arrival_codes, solution_codes=solution_codes, hints=hints)
 
 
 @puzzles.route('/puzzles/<id_puzzle>/delete', methods=("POST",))
@@ -61,7 +63,7 @@ def puzzles_delete(id_puzzle):
     return redirect("/puzzles")
 
 
-@puzzles.route('/prerequisites/<id_new_puzzle>/new', methods=("GET", "POST"))
+@puzzles.route('/puzzles/<id_new_puzzle>/prerequisites/new', methods=("GET", "POST"))
 @admin_required
 def prerequisites_new(id_new_puzzle):
     puzzle = Puzzle.query.get(id_new_puzzle)
@@ -77,7 +79,7 @@ def prerequisites_new(id_new_puzzle):
         return render("prerequisite_edit.html", puzzle=puzzle, other_puzzles=other_puzzles)
 
 
-@puzzles.route('/prerequisites/<id_new_puzzle>/prerequisites/<id_previous_puzzle>/delete', methods=("POST",))
+@puzzles.route('/puzzles/<id_new_puzzle>/prerequisites/<id_previous_puzzle>/delete', methods=("POST",))
 @admin_required
 def prerequisites_delete(id_new_puzzle, id_previous_puzzle):
     prerequisite = PuzzlePrerequisite.query.get((id_previous_puzzle, id_new_puzzle))
