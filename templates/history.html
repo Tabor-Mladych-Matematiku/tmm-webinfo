@@ -25,4 +25,65 @@
             </li>
         {% endfor %}
     </ul>
+
+    {% if current_user.is_admin %}
+        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#submit_team_code" aria-expanded="false" aria-controls="submit_team_code">
+            Zadat kód místo týmu
+        </button>
+        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#use_team_hint" aria-expanded="false" aria-controls="use_team_hint">
+            Zobrazit týmu nápovědu
+        </button>
+
+        <div id="submit_team_code" class="collapse">
+            <h2>Zadat kód místo týmu</h2>
+            <form method="post" action="/submit/{{ team.id_team }}">
+                <div class="row mb-3">
+                    <div class="col d-flex">
+                        <div class="flex-fill me-2">
+                            <input type="text" class="form-control" id="code" name="code" required value="" placeholder="Kód stanoviště nebo řešení šifry">
+                            <label for="code"></label>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Odeslat</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="use_team_hint" class="collapse">
+            <h2>Zobrazit týmu nápovědu</h2>
+            <form method="post" action="/hint_team/{{ team.id_team }}">
+                <div class="row mb-3">
+                    <div class="col">
+                        <ul>
+                            {% for puzzle in puzzles %}
+                                <li>
+                                    {{ puzzle.puzzle }}
+                                    <ul class="list-unstyled">
+                                        {% for hint in puzzle.get_available_hints(team.id_team) %}
+                                            <li>
+                                                <input class="form-check-input" type="radio" name="id_hint" id="id_hint_{{ hint.id_hint }}" value="{{ hint.id_hint }}">
+                                                <label class="form-check-label" for="id_hint_{{ hint.id_hint }}">
+                                                    {{ hint.order }}
+                                                </label>
+                                                <span class="ms-3">{{ hint.hint }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <div>
+                            <button type="submit" class="btn btn-primary">Odeslat</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
 {% endblock content %}

@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 
 from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code, \
     TeamSubmittedCode, Hint, TeamUsedHint
-from helpers import render, get_current_puzzlehunt
+from helpers import render, get_current_puzzlehunt, admin_required
 
 journey = Blueprint('journey', __name__, template_folder='templates', static_folder='static')
 
@@ -41,9 +41,14 @@ def index():
 
 @journey.route("/submit", methods=("POST",))
 @login_required
-def submit_code():
+def submit_code(id_team=None):
     code = request.form["code"]
-    id_team = current_user.id_team
+    if id_team is None:
+        id_team = current_user.id_team
+    else:
+        if not current_user.is_admin:
+            flash("Tato operace je dostupná pouze organizátorům.", "danger")
+            return redirect("/")
 
     solved_puzzles_ids_query = TeamSolved.query\
         .filter_by(id_team=id_team)\
@@ -111,10 +116,22 @@ def submit_code():
     return redirect("/")
 
 
+@journey.route("/submit/<id_team>", methods=("POST",))
+@admin_required
+def submit_code_admin(id_team):
+    submit_code(id_team)
+    return redirect(f"/history/{id_team}")
+
+
 @journey.route("/hint/<id_hint>", methods=("POST",))
 @login_required
-def use_hint(id_hint):
-    id_team = current_user.id_team
+def use_hint(id_hint, id_team=None):
+    if id_team is None:
+        id_team = current_user.id_team
+    else:
+        if not current_user.is_admin:
+            flash("Tato operace je dostupná pouze organizátorům.", "danger")
+            return redirect("/")
 
     hint = Hint.query.get(id_hint)
     if hint is None:
@@ -133,3 +150,11 @@ def use_hint(id_hint):
     db.session.commit()
     flash(f'Nápověda použita.', "success")
     return redirect("/")
+
+
+@journey.route("/hint_team/<id_team>", methods=("POST",))
+@admin_required
+def hint_team_admin(id_team):
+    id_hint = request.form['id_hint']
+    use_hint(id_hint, id_team)
+    return redirect(f"/history/{id_team}")
