@@ -2,7 +2,8 @@ from typing import List
 from flask import request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
 
-from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code
+from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code, \
+    TeamSubmittedCode
 from helpers import render, get_current_puzzlehunt
 
 journey = Blueprint('journey', __name__, template_folder='templates', static_folder='static')
@@ -29,8 +30,13 @@ def index():
                 .filter_by(id_team=current_user.id_team)
                 .with_entities(TeamSolved.id_puzzle)))\
         .all()
+    team_submitted_codes = TeamSubmittedCode.query \
+        .filter_by(id_team=current_user.id_team) \
+        .order_by(TeamSubmittedCode.timestamp.desc())\
+        .join(Code)\
+        .all()
 
-    return render("index.html", solves=team_solves_with_arrivals, arrivals=team_arrivals)
+    return render("index.html", solves=team_solves_with_arrivals, arrivals=team_arrivals, submitted_codes=team_submitted_codes)
 
 
 @journey.route("/submit", methods=("POST",))
@@ -86,7 +92,20 @@ def submit_code():
             flash(f'Kód stanoviště "{arrival.code}" je správný. Šifra "{arrival.puzzle.puzzle}" otevřena.', "success")
             return redirect("/")
 
-    # TODO: check puzzlehunt global codes
+    not_used_puzzlehunt_codes = Code.query\
+        .filter_by(id_puzzlehunt=get_current_puzzlehunt())\
+        .filter(Code.id_code.not_in(
+            TeamSubmittedCode.query
+                .filter_by(id_team=id_team)
+                .with_entities(TeamSubmittedCode.id_code)))\
+        .all()
+    for puzzlehunt_code in not_used_puzzlehunt_codes:
+        if puzzlehunt_code.code == code:
+            team_submitted_code = TeamSubmittedCode(id_team, puzzlehunt_code.id_code)
+            db.session.add(team_submitted_code)
+            db.session.commit()
+            flash(f'Kód "{puzzlehunt_code.code}" je správný.', "success")
+            return redirect("/")
 
     flash(f'Kód "{code}" není správný (nebo už byl zadán).', "danger")
     return redirect("/")

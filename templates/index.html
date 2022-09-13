@@ -20,12 +20,16 @@
         </div>
     </form>
 
+    {% if arrivals %}
+        <h3>Šifry</h3>
+    {% endif %}
+
     {% for arrival in arrivals %}
         <div class="row">
             <div class="col">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ arrival.puzzle.puzzle }}</h5>
+                        <h5 class="card-title"><i class="bi bi-file-earmark-richtext-fill text-info me-2"></i>{{ arrival.puzzle.puzzle }}</h5>
                         <div>{{ arrival.puzzle.assignment|safe }}</div>
                     </div>
                     <div class="card-footer text-muted">
@@ -39,10 +43,34 @@
         </div>
     {% endfor %}
 
+    {% if submitted_codes %}
+        <h3>Zadané kódy</h3>
+    {% endif %}
+
+    {% for submitted_code in submitted_codes %}
+        <div class="row">
+            <div class="col">
+                <div class="card border-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-file-earmark-code-fill text-primary me-2"></i>Kód: "{{ submitted_code.code.code }}"</h5>
+                        <div>{{ submitted_code.code.message|safe }}</div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div>Zadáno: {{ submitted_code.timestamp.strftime("%H:%M") }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if solves %}
+        <h3>Vyřešené šifry</h3>
+    {% endif %}
+
     {% for solve, arrival in solves %}
         <div class="row">
             <div class="col">
-                <div class="card text-bg-light mb-3">
+                <div class="card text-bg-light border-success mb-3">
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ solve.puzzle.puzzle }}</h5>
                         <div>{{ solve.puzzle.assignment|safe }}</div>

@@ -249,7 +249,7 @@ class TeamSubmittedCode(db.Model, HistoryEntry):
 
     def __init__(self, id_team, id_code):
         self.id_team = id_team
-        self.id_puzzle = id_code
+        self.id_code = id_code
         self.timestamp = datetime.now()
 
     @property
