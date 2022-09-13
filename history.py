@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import redirect, Blueprint, request, flash
 from flask_login import login_required, current_user
 
-from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code
+from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code, TeamUsedHint, Hint
 from helpers import render, admin_required
 
 history_blueprint = Blueprint('history', __name__, template_folder='templates', static_folder='static')
@@ -29,8 +29,12 @@ def history(id_team=None):
         .filter_by(id_team=id_team) \
         .join(Code) \
         .all()
+    team_used_hints = TeamUsedHint.query \
+        .filter_by(id_team=id_team) \
+        .join(Hint) \
+        .all()
 
-    history = team_solves + team_arrivals + team_submitted_codes
+    history = team_solves + team_arrivals + team_submitted_codes + team_used_hints
     history = reversed(sorted(history, key=lambda e: e.timestamp))
 
     return render("history.html", history=history, team=team)
@@ -127,3 +131,33 @@ def code_submit_delete(id_team, id_code):
         db.session.commit()
     flash(f'Zadání kódu "{code.code}" týmem "{team.name}" smazáno.', "success")
     return redirect(f"/history/{id_team}")
+
+
+@history_blueprint.route('/history/<id_team>/hint/<id_hint>', methods=("GET", "POST"))
+@admin_required
+def hint_used_edit(id_team, id_hint):
+    hint_used = TeamUsedHint.query.get((id_team, id_hint))
+
+    if request.method == "POST":
+        hint_used.timestamp = datetime.strptime(request.form['timestamp'], '%d.%m.%Y %H:%M:%S')
+        db.session.add(hint_used)
+        db.session.commit()
+        return redirect(f"/history/{id_team}")
+    else:
+        return render("history_entry_edit.html", heading="Upravit čas použití nápovědy", back_url=f"/history/{id_team}", entry=hint_used)
+
+
+@history_blueprint.route('/history/<id_team>/hint/<id_code>/delete', methods=("POST",))
+@admin_required
+def hint_used_delete(id_team, id_hint):
+    hint_used = TeamUsedHint.query.get((id_team, id_hint))
+    if hint_used is None:
+        flash(f'Použití nápovědy neexistuje.', "danger")
+    else:
+        team = hint_used.team
+        hint = hint_used.hint
+        db.session.delete(hint_used)
+        db.session.commit()
+    flash(f'Použití {hint.order}.nápovědy týmem "{team.name}" smazáno.', "success")
+    return redirect(f"/history/{id_team}")
+

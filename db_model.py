@@ -313,7 +313,7 @@ class Hint(db.Model):
         return f"{minutes} minut {seconds} sekund"
 
 
-class TeamUsedHint(db.Model):  # TODO: HistoryEntry
+class TeamUsedHint(db.Model, HistoryEntry):
 
     __tablename__ = "team_used_hints"
 
@@ -328,3 +328,15 @@ class TeamUsedHint(db.Model):  # TODO: HistoryEntry
         self.id_team = id_team
         self.id_hint = id_hint
         self.timestamp = datetime.now()
+
+    @property
+    def icon_html(self):
+        return '<i class="bi bi-lightbulb-fill text-warning"></i>'
+
+    @property
+    def history_entry_html(self):
+        return f'Použití {self.hint.order}. nápovědy u šifry "{self.hint.puzzle.puzzle}"'
+
+    @property
+    def edit_url(self):
+        return f'/history/{self.id_team}/hint/{self.id_hint}'
