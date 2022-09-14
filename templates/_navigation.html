@@ -2,7 +2,10 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="/">{{ user.name }}</a>
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename='TMM_circle.png') }}" alt="TMM logo" height="28" class="d-inline-block align-text-top me-2">
+            {{ user.name }}
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
