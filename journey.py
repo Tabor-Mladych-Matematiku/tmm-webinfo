@@ -2,6 +2,7 @@ from typing import List
 from flask import request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
 
+from codes import compare_codes
 from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code, \
     TeamSubmittedCode, Hint, TeamUsedHint
 from helpers import render, get_current_puzzlehunt, admin_required
@@ -63,7 +64,7 @@ def submit_code(id_team=None):
         .filter(SolutionCode.id_puzzle.in_(open_puzzles_ids_query))\
         .all()
     for solution in open_puzzles_solution_codes:
-        if solution.code == code:
+        if compare_codes(code, solution.code):
             team_solved = TeamSolved(id_team, solution.id_puzzle, solution.id_solution_code)
             db.session.add(team_solved)
             db.session.commit()
@@ -80,7 +81,7 @@ def submit_code(id_team=None):
         .filter(ArrivalCode.id_puzzle.in_(not_open_puzzles_ids_query))\
         .all()
     for arrival in not_open_puzzles_codes:
-        if arrival.code == code:
+        if compare_codes(code, arrival.code):
             prerequisites = PuzzlePrerequisite.query\
                 .filter_by(id_new_puzzle=arrival.id_puzzle)\
                 .with_entities(PuzzlePrerequisite.id_previous_puzzle)
@@ -105,7 +106,7 @@ def submit_code(id_team=None):
                 .with_entities(TeamSubmittedCode.id_code)))\
         .all()
     for puzzlehunt_code in not_used_puzzlehunt_codes:
-        if puzzlehunt_code.code == code:
+        if compare_codes(code, puzzlehunt_code.code):
             team_submitted_code = TeamSubmittedCode(id_team, puzzlehunt_code.id_code)
             db.session.add(team_submitted_code)
             db.session.commit()

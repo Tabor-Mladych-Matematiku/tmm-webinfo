@@ -6,6 +6,26 @@ from helpers import render, admin_required
 codes = Blueprint('codes', __name__, template_folder='templates', static_folder='static')
 
 
+# Code normalization
+
+
+LETTERS_NODIA = "acdeeinorstuuyz"
+LETTERS_DIA = "áčďéěíňóřšťúůýž"
+
+# A translation table usable with `str.translate` to rewrite characters with dia to the ones without them.
+REMOVE_DIA = str.maketrans(LETTERS_DIA + LETTERS_DIA.upper(), LETTERS_NODIA + LETTERS_NODIA.upper())
+
+
+def remove_diacritics(text: str):
+    return text.translate(REMOVE_DIA)
+
+
+def compare_codes(user_code: str, correct_code: str):
+    user_code = remove_diacritics(user_code).lower().strip()
+    correct_code = remove_diacritics(correct_code).lower().strip()
+    return user_code == correct_code
+
+
 # Puzzlehunt codes
 
 
