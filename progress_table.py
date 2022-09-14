@@ -1,8 +1,9 @@
 from collections import defaultdict
 from typing import List
 from flask import Blueprint
+from sqlalchemy import func
 
-from db_model import Puzzle, Team, TeamArrived, TeamSolved
+from db_model import Puzzle, Team, TeamArrived, TeamSolved, TeamUsedHint, Hint
 from helpers import render, get_current_puzzlehunt, admin_required
 
 progress_table = Blueprint('progress_table', __name__, template_folder='templates', static_folder='static')
@@ -20,6 +21,13 @@ def progress():
     solves: List[TeamSolved] = TeamSolved.query\
         .filter(TeamSolved.id_team.in_(team_ids)).all()
 
+    hints_used: List[int] = TeamUsedHint.query\
+        .filter(TeamUsedHint.id_team.in_(team_ids))\
+        .join(Hint)\
+        .with_entities(TeamUsedHint.id_team, Hint.id_puzzle, func.count(Hint.id_hint))\
+        .group_by(TeamUsedHint.id_team, Hint.id_puzzle)\
+        .all()
+
     arrival_times = defaultdict(dict)
     for arrival in arrivals:
         arrival_times[arrival.id_team][arrival.id_puzzle] = arrival.timestamp.strftime("%H:%M")
@@ -28,5 +36,10 @@ def progress():
     for solve in solves:
         solve_times[solve.id_team][solve.id_puzzle] = solve.timestamp.strftime("%H:%M")
 
-    return render("progress_table.html", puzzles=puzzles, teams=teams, arrival_times=arrival_times, solve_times=solve_times)
+    hints = defaultdict(lambda: defaultdict(int))
+    for id_team, id_puzzle, hint_count in hints_used:
+        hints[id_team][id_puzzle] = hint_count
+        hints[id_team]["sum"] += hint_count
 
+    return render("progress_table.html", puzzles=puzzles, teams=teams,
+                  arrival_times=arrival_times, solve_times=solve_times, hints=hints)

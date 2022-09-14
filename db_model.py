@@ -335,7 +335,7 @@ class TeamUsedHint(db.Model, HistoryEntry):
 
     @property
     def history_entry_html(self):
-        return f'Použití {self.hint.order}. nápovědy u šifry "{self.hint.puzzle.puzzle}"'
+        return f'Zobrazení {self.hint.order}. nápovědy u šifry "{self.hint.puzzle.puzzle}"'
 
     @property
     def edit_url(self):

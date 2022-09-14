@@ -12,6 +12,7 @@
             {% for puzzle in puzzles %}
                 <th scope="col" colspan="3">{{ puzzle.puzzle }}</th>
             {% endfor %}
+            <th scope="col"></th>
         </tr>
         <tr>
             <th scope="col">Tým</th>
@@ -20,6 +21,7 @@
                 <th scope="col">Odchod</th>
                 <th scope="col">Nápovědy</th>
             {% endfor %}
+            <th scope="col">Celkem nápověd</th>
         </tr>
         </thead>
         <tbody>
@@ -35,8 +37,13 @@
                     <td {{ "class=text-bg-success" if puzzle.id_puzzle in solve_times[team.id_team] }}>
                         {{ solve_times[team.id_team][puzzle.id_puzzle] }}
                     </td>
-                    <td></td>
+                    <td>
+                        {{ hints[team.id_team][puzzle.id_puzzle] if hints[team.id_team][puzzle.id_puzzle] > 0 }}
+                    </td>
                 {% endfor %}
+                <td>
+                    {{ hints[team.id_team]["sum"] }}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

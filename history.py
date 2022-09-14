@@ -134,7 +134,7 @@ def code_submit_delete(id_team, id_code):
         code = code_submit.code
         db.session.delete(code_submit)
         db.session.commit()
-    flash(f'Zadání kódu "{code.code}" týmem "{team.name}" smazáno.', "success")
+        flash(f'Zadání kódu "{code.code}" týmem "{team.name}" smazáno.', "success")
     return redirect(f"/history/{id_team}")
 
 
@@ -149,20 +149,20 @@ def hint_used_edit(id_team, id_hint):
         db.session.commit()
         return redirect(f"/history/{id_team}")
     else:
-        return render("history_entry_edit.html", heading="Upravit čas použití nápovědy", back_url=f"/history/{id_team}", entry=hint_used)
+        return render("history_entry_edit.html", heading="Upravit čas zobrazení nápovědy", back_url=f"/history/{id_team}", entry=hint_used)
 
 
-@history_blueprint.route('/history/<id_team>/hint/<id_code>/delete', methods=("POST",))
+@history_blueprint.route('/history/<id_team>/hint/<id_hint>/delete', methods=("POST",))
 @admin_required
 def hint_used_delete(id_team, id_hint):
     hint_used = TeamUsedHint.query.get((id_team, id_hint))
     if hint_used is None:
-        flash(f'Použití nápovědy neexistuje.', "danger")
+        flash(f'Zobrazení nápovědy neexistuje.', "danger")
     else:
         team = hint_used.team
         hint = hint_used.hint
         db.session.delete(hint_used)
         db.session.commit()
-    flash(f'Použití {hint.order}.nápovědy týmem "{team.name}" smazáno.', "success")
+        flash(f'Zobrazení {hint.order}.nápovědy týmem "{team.name}" smazáno.', "success")
     return redirect(f"/history/{id_team}")
 
