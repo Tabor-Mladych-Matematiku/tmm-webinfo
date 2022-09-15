@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <label for="password" class="col-3 col-form-label">Heslo</label>
+            <label for="password" class="col-3 col-form-label {{ "required" if not team }}">Heslo</label>
             <div class="col-9">
                 <input type="password" class="form-control" id="password" name="password" {{ "required" if not team }} placeholder="{{ "Nechte prázdné pro zachování současného hesla." if team }}">
             </div>

@@ -3,8 +3,9 @@ from typing import List
 from flask import Blueprint
 from sqlalchemy import func
 
-from db_model import Puzzle, Team, TeamArrived, TeamSolved, TeamUsedHint, Hint
+from db_model import Puzzle, Team, TeamArrived, TeamSolved, TeamUsedHint, Hint, TeamSubmittedCode
 from helpers import render, get_current_puzzlehunt, admin_required
+from puzzlehunts import get_settings_for_puzzlehunt
 
 progress_table = Blueprint('progress_table', __name__, template_folder='templates', static_folder='static')
 
@@ -41,5 +42,17 @@ def progress():
         hints[id_team][id_puzzle] = hint_count
         hints[id_team]["sum"] += hint_count
 
+    puzzlehunt_settings = get_settings_for_puzzlehunt(get_current_puzzlehunt())
+    finish_times = {}
+    if "finish_code" in puzzlehunt_settings:
+        try:
+            finish_code = int(puzzlehunt_settings["finish_code"].value)
+            for finish in TeamSubmittedCode.query\
+                    .filter_by(id_code=finish_code)\
+                    .filter(TeamSubmittedCode.id_team.in_(team_ids)):
+                finish_times[finish.id_team] = finish.timestamp.strftime("%H:%M")
+        except ValueError:
+            pass
+
     return render("progress_table.html", puzzles=puzzles, teams=teams,
-                  arrival_times=arrival_times, solve_times=solve_times, hints=hints)
+                  arrival_times=arrival_times, solve_times=solve_times, hints=hints, finish_times=finish_times)
