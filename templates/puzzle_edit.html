@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <label for="puzzle" class="col-3 col-form-label">Název šifry</label>
+            <label for="puzzle" class="col-3 col-form-label required">Název šifry</label>
             <div class="col-9">
                 <input type="text" class="form-control" id="puzzle" name="puzzle" required value="{{ puzzle.puzzle if puzzle else "" }}">
             </div>
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <label for="order" class="col-3 col-form-label">Pořadí</label>
+            <label for="order" class="col-3 col-form-label required">Pořadí</label>
             <div class="col-9">
                 <input type="number" class="form-control" id="order" name="order" required value="{{ puzzle.order if puzzle else order }}">
             </div>
@@ -112,5 +112,7 @@
             {% endfor %}
         </ul>
         <a class="btn btn-secondary mb-3" href="/puzzles/{{ puzzle.id_puzzle }}/prerequisites/new" role="button">Přidat šifru</a>
+    {% else %}
+        <p>Nastavení nápověd, řešení a závislostí se objeví po uložení základních informací.</p>
     {% endif %}
 {% endblock content_admin %}

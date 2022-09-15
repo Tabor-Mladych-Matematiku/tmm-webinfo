@@ -1,10 +1,15 @@
+from typing import Dict
 from flask import request, redirect, flash, Blueprint
 
 from codes import get_codes
-from db_model import Puzzlehunt, db, Settings
+from db_model import Puzzlehunt, db, Settings, PuzzlehuntSettings
 from helpers import get_current_puzzlehunt, render, admin_required
 
 puzzlehunts = Blueprint('puzzlehunts', __name__, template_folder='templates', static_folder='static')
+
+
+def get_settings_for_puzzlehunt(id_puzzlehunt) -> Dict[str, PuzzlehuntSettings]:
+    return {ps.key: ps for ps in PuzzlehuntSettings.query.filter_by(id_puzzlehunt=id_puzzlehunt)}
 
 
 @puzzlehunts.route('/puzzlehunts')
@@ -22,7 +27,16 @@ def puzzlehunts_new():
         puzzlehunt = Puzzlehunt(request.form["puzzlehunt"])
         db.session.add(puzzlehunt)
         db.session.commit()
-        return redirect("/puzzlehunts")
+
+        minutes_to_hint = PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "minutes_to_hint")
+        minutes_to_hint.value = request.form["minutes_to_hint"]
+        db.session.add(minutes_to_hint)
+        hints_are_ordered = PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "hints_are_ordered")
+        hints_are_ordered.value = str("hints_are_ordered" in request.form)
+        db.session.add(hints_are_ordered)
+        db.session.commit()
+
+        return redirect(f"/puzzlehunts/{puzzlehunt.id_puzzlehunt}")
     return render("puzzlehunt_edit.html")
 
 
@@ -33,14 +47,32 @@ def puzzlehunts_edit(id_puzzlehunt):
     if puzzlehunt is None:
         flash(f"Šifrovačka s id_puzzlehunt={id_puzzlehunt} neexistuje.", "warning")
         return redirect("/puzzlehunts")
+    puzzlehunt_settings = get_settings_for_puzzlehunt(id_puzzlehunt)
 
     if request.method == "POST":
         puzzlehunt.puzzlehunt = request.form["puzzlehunt"]
         db.session.add(puzzlehunt)
+
+        minutes_to_hint = puzzlehunt_settings.get("minutes_to_hint",
+                                                  PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "minutes_to_hint"))
+        minutes_to_hint.value = request.form["minutes_to_hint"]
+        db.session.add(minutes_to_hint)
+
+        hints_are_ordered = puzzlehunt_settings.get("hints_are_ordered",
+                                                    PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "hints_are_ordered"))
+        hints_are_ordered.value = str("hints_are_ordered" in request.form)
+        db.session.add(hints_are_ordered)
+
+        finish_code = puzzlehunt_settings.get("finish_code",
+                                              PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "finish_code"))
+        finish_code.value = request.form["finish_code"]
+        db.session.add(finish_code)
+
         db.session.commit()
         return redirect("/puzzlehunts")
     else:
-        return render("puzzlehunt_edit.html", puzzlehunt=puzzlehunt, codes=get_codes(id_puzzlehunt))
+        return render("puzzlehunt_edit.html", puzzlehunt=puzzlehunt, codes=get_codes(id_puzzlehunt),
+                      puzzlehunt_settings=puzzlehunt_settings)
 
 
 @puzzlehunts.route('/puzzlehunts/<id_puzzlehunt>/activate', methods=("POST",))

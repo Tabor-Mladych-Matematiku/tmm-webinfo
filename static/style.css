@@ -9,3 +9,8 @@ h2 {
 .login-form {
     max-width: 500px;
 }
+
+label.required:after {
+  content: "*";
+  color: red;
+}

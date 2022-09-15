@@ -32,6 +32,19 @@ class Puzzlehunt(db.Model):
         self.puzzlehunt = puzzlehunt
 
 
+class PuzzlehuntSettings(db.Model):
+
+    __tablename__ = "puzzlehunt_settings"
+
+    id_puzzlehunt = db.Column(db.Integer, db.ForeignKey(Puzzlehunt.id_puzzlehunt, ondelete='CASCADE'), primary_key=True)
+    key = db.Column(db.String(256), primary_key=True)
+    value = db.Column(db.Text)
+
+    def __init__(self, id_puzzlehunt, key):
+        self.id_puzzlehunt = id_puzzlehunt
+        self.key = key
+
+
 class User(UserMixin, Abstract):
 
     __required_attributes__ = ["name"]

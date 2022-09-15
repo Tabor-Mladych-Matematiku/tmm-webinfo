@@ -13,13 +13,13 @@
             </div>
         </div>
         <div class="row mb-3">
-            <label for="order" class="col-3 col-form-label">Pořadí</label>
+            <label for="order" class="col-3 col-form-label required">Pořadí</label>
             <div class="col-9">
                 <input type="number" class="form-control" id="order" name="order" required value="{{ hint.order if hint else order }}">
             </div>
         </div>
         <div class="row mb-3">
-            <label for="minutes_to_open" class="col-3 col-form-label">Minuty do otevření</label>
+            <label for="minutes_to_open" class="col-3 col-form-label required">Minuty do otevření</label>
             <div class="col-9">
                 <input type="number" class="form-control" id="minutes_to_open" name="minutes_to_open" required value="{{ hint.minutes_to_open if hint else "" }}">
             </div>

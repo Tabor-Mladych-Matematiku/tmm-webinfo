@@ -22,7 +22,7 @@ def puzzles_new():
         puzzle = Puzzle(get_current_puzzlehunt(), request.form["puzzle"], request.form["assignment"], request.form["order"])
         db.session.add(puzzle)
         db.session.commit()
-        return redirect("/puzzles")
+        return redirect(f"/puzzles/{puzzle.id_puzzle}")
     order = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).count() + 1
     return render("puzzle_edit.html", order=order)
 
