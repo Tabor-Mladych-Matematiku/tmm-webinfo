@@ -3,6 +3,7 @@ from flask import request, redirect, flash, Blueprint
 from codes import get_arrival_codes, get_solution_codes
 from db_model import Puzzle, db, PuzzlePrerequisite, Hint
 from helpers import render, get_current_puzzlehunt, admin_required
+from puzzlehunts import get_settings_for_puzzlehunt
 
 hints = Blueprint('hints', __name__, template_folder='templates', static_folder='static')
 
@@ -23,7 +24,9 @@ def hints_new(id_puzzle):
         return redirect(f"/puzzles/{id_puzzle}")
     else:
         order = Hint.query.filter_by(id_puzzle=id_puzzle).count() + 1
-        return render("hint_edit.html", puzzle=puzzle, order=order)
+        puzzlehunt_settings = get_settings_for_puzzlehunt(puzzle.id_puzzlehunt)
+        default_minutes_to_open = puzzlehunt_settings["minutes_to_hint"].value if "minutes_to_hint" in puzzlehunt_settings else ""
+        return render("hint_edit.html", puzzle=puzzle, order=order, minutes_to_open=default_minutes_to_open)
 
 
 @hints.route('/puzzles/<id_puzzle>/hints/<id_hint>', methods=("GET", "POST"))
