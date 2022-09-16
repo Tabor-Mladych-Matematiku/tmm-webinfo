@@ -53,5 +53,5 @@ def progress():
         except ValueError:
             pass
 
-    return render("progress_table.html", puzzles=puzzles, teams=teams,
+    return render("progress_table.html", fluid=True, puzzles=puzzles, teams=teams,
                   arrival_times=arrival_times, solve_times=solve_times, hints=hints, finish_times=finish_times)

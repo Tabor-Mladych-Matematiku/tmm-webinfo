@@ -44,7 +44,7 @@
                                     <button type="submit" class="btn btn-primary">Zobrazit nápovědu</button>
                                 </form>
                             {% else %}
-                                <button type="button" class="btn btn-primary" disabled>{{ hint.hint_opens_in(arrival.timestamp) }}</button>
+                                <button type="button" class="btn btn-primary" disabled>{{ hint.hint_opens_in(arrival.timestamp, current_user.id_team) }}</button>
                             {% endif %}
                         {% endfor %}
                     </div>

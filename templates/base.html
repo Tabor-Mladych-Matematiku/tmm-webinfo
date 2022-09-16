@@ -23,10 +23,10 @@
 {% endif %}
 
 {% block content_main %}
-<main class="container">
+<main class="container{{ "-fluid" if fluid }}">
     {% include "_flashes.html" %}
-    <div class="row">
-        <div class="col">
+    <div class="row {{ "justify-content-center" if fluid }}">
+        <div class="col{{ "-auto" if fluid }}">
             {% block content %}
                 <h1>{{ title }}</h1>
                 <p>Welcome to {{ title }}!</p>

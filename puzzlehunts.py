@@ -21,7 +21,7 @@ def puzzlehunts_new():
     if request.method == "POST":
         puzzlehunt = Puzzlehunt(request.form["puzzlehunt"])
         db.session.add(puzzlehunt)
-        db.session.commit()
+        db.session.flush()
 
         minutes_to_hint = PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "minutes_to_hint")
         minutes_to_hint.value = request.form["minutes_to_hint"]

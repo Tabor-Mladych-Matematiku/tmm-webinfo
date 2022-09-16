@@ -361,13 +361,14 @@ class Hint(db.Model):
         time_since_arrival = datetime.now() - arrival_time
         return timedelta(minutes=self.minutes_to_open) - time_since_arrival
 
-    def hint_opens_in(self, arrival_time: datetime):
-        if self._hints_are_ordered():
+    def hint_opens_in(self, arrival_time: datetime, id_team):
+        if self._hints_are_ordered() and not self._all_previous_hints_used(id_team):
             return "Nejprve použijte předchozí nápovědy"
 
-        time_to_hint = self._time_to_hint(arrival_time)
-        minutes, seconds = divmod(time_to_hint.seconds, 60)
-        return f"Za {minutes} minut {seconds} sekund"
+        if not self._hint_time_passed(arrival_time):
+            time_to_hint = self._time_to_hint(arrival_time)
+            minutes, seconds = divmod(time_to_hint.seconds, 60)
+            return f"Za {minutes} minut {seconds} sekund"
 
 
 class TeamUsedHint(db.Model, HistoryEntry):

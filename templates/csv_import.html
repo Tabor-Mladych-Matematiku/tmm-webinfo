@@ -1,0 +1,53 @@
+{# templates/csv_import.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <form method="post">
+        <div class="row mb-3">
+            <label for="puzzlehunt" class="col-3 col-form-label required">Šifrovačka</label>
+            <div class="col-9">
+                <input type="text" class="form-control" id="puzzlehunt" name="puzzlehunt" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="minutes_to_hint" class="col-3 col-form-label required">Čas nápověd (minuty)</label>
+            <div class="col-9">
+                <input type="number" class="form-control" id="minutes_to_hint" name="minutes_to_hint" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="puzzlehunt_csv" class="col-3 col-form-label required">CSV</label>
+            <div class="col-9">
+                <textarea id="puzzlehunt_csv" name="puzzlehunt_csv" class="form-control" required
+                          placeholder="order,puzzle,arrival_code,solution_code,solution_message,hint_1,hint_2,prerequisites"></textarea>
+                <dl class="row mt-3">
+                    <dt class="col-2"><code>order</code></dt>
+                    <dd class="col-10">pořadí šifry</dd>
+                    <dt class="col-2"><code>puzzle</code></dt>
+                    <dd class="col-10">název šifry</dd>
+                    <dt class="col-2"><code>arrival_code</code></dt>
+                    <dd class="col-10">kód pro příchod na stanoviště (zobrazení šifry v systému)</dd>
+                    <dt class="col-2"><code>solution_code</code></dt>
+                    <dd class="col-10">řešení šifry</dd>
+                    <dt class="col-2"><code>solution_message</code></dt>
+                    <dd class="col-10">zpráva pro tým po vyřešení (může být HTML)</dd>
+                    <dt class="col-2"><code>hint_1</code></dt>
+                    <dd class="col-10">první nápověda (může být HTML)</dd>
+                    <dt class="col-2"><code>hint_2</code></dt>
+                    <dd class="col-10">druhá nápověda (může být HTML)</dd>
+                    <dt class="col-2"><code>prerequisites</code></dt>
+                    <dd class="col-10">seznam šifer, které musí být vyřešeny, než jde zadat příchozí kód této šifry (zadává se jako seznam čísel &ndash; pořadí šifer &ndash; oddělených čárkami)</dd>
+                </dl>
+                <p>CSV zadávejte včetně hlavičky, oddělené čárkami (a pokud jsou v nějaké buňce čárky, dejte ji do uvozovek).</p>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="/puzzlehunts" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+    <p>Další nastavení se objeví po uložení základních informací.</p>
+{% endblock content_admin %}

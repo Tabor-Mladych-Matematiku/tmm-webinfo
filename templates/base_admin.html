@@ -2,10 +2,11 @@
 
 {% extends "base.html" %}
 
-{% block content %}
-<main class="container">
-    <div class="row">
-        <div class="col">
+{% block content_main %}
+<main class="container{{ "-fluid" if fluid }}">
+    {% include "_flashes.html" %}
+    <div class="row {{ "justify-content-center" if fluid }}">
+        <div class="col{{ "-auto" if fluid }}">
             {% if user.is_admin %}
                 {% block content_admin %}
                     <h1>Administrace</h1>
@@ -18,4 +19,4 @@
         </div>
     </div>
 </main>
-{% endblock content %}
+{% endblock content_main %}
