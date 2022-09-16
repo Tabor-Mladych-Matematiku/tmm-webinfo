@@ -19,14 +19,14 @@
         <div class="row mb-3">
             <label for="minutes_to_hint" class="col-3 col-form-label">Výchozí čas nápovědy (minuty)</label>
             <div class="col-9">
-                <input type="number" class="form-control" id="minutes_to_hint" name="minutes_to_hint" value="{{ puzzlehunt_settings["minutes_to_hint"].value if puzzlehunt_settings }}">
+                <input type="number" class="form-control" id="minutes_to_hint" name="minutes_to_hint" value="{{ puzzlehunt_settings["minutes_to_hint"].value if "minutes_to_hint" in puzzlehunt_settings }}">
             </div>
         </div>
         <div class="row mb-3">
             <label for="hints_are_ordered" class="col-3 col-form-label">Nápovědy se musí brát popořadě</label>
             <div class="col-9">
                 <input type="checkbox" class="form-check-input" id="hints_are_ordered" name="hints_are_ordered" style="margin-top: 0.75rem"
-                        {{ "checked" if not puzzlehunt or puzzlehunt_settings["hints_are_ordered"].value == "True" }}>
+                        {{ "checked" if not puzzlehunt or "hints_are_ordered" in puzzlehunt_settings and puzzlehunt_settings["hints_are_ordered"].value == "True" }}>
             </div>
         </div>
         {% if puzzlehunt %}
@@ -37,7 +37,7 @@
                     <option value="" {{ "selected" if "finish_code" not in puzzlehunt_settings or puzzlehunt_settings["finish_code"].value == "" }}></option>
                     {% for code in codes %}
                         <option value="{{ code.id_code }}"
-                                {{ "selected=selected" if puzzlehunt_settings["finish_code"].value == (code.id_code|string) }}>
+                                {{ "selected=selected" if "finish_code" in puzzlehunt_settings and puzzlehunt_settings["finish_code"].value == (code.id_code|string) }}>
                             {{ code.code }}
                         </option>
                     {% endfor %}
