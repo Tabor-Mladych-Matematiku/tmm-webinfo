@@ -1,22 +1,17 @@
-from typing import Dict
 from flask import request, redirect, flash, Blueprint
 
 from codes import get_codes
 from db_model import Puzzlehunt, db, Settings, PuzzlehuntSettings
-from helpers import get_current_puzzlehunt, render, admin_required
+from helpers import render, admin_required
 
 puzzlehunts = Blueprint('puzzlehunts', __name__, template_folder='templates', static_folder='static')
-
-
-def get_settings_for_puzzlehunt(id_puzzlehunt) -> Dict[str, PuzzlehuntSettings]:
-    return {ps.key: ps for ps in PuzzlehuntSettings.query.filter_by(id_puzzlehunt=id_puzzlehunt)}
 
 
 @puzzlehunts.route('/puzzlehunts')
 @admin_required
 def puzzlehunts_list():
     puzzlehunts = Puzzlehunt.query.all()
-    current_puzzlehunt = get_current_puzzlehunt()
+    current_puzzlehunt = Puzzlehunt.get_current_id()
     return render("puzzlehunts.html", puzzlehunts=puzzlehunts, current_puzzlehunt=current_puzzlehunt)
 
 
@@ -47,7 +42,7 @@ def puzzlehunts_edit(id_puzzlehunt):
     if puzzlehunt is None:
         flash(f"Šifrovačka s id_puzzlehunt={id_puzzlehunt} neexistuje.", "warning")
         return redirect("/puzzlehunts")
-    puzzlehunt_settings = get_settings_for_puzzlehunt(id_puzzlehunt)
+    puzzlehunt_settings = Puzzlehunt.get_settings_for_id(id_puzzlehunt)
 
     if request.method == "POST":
         puzzlehunt.puzzlehunt = request.form["puzzlehunt"]
@@ -95,7 +90,7 @@ def puzzlehunts_activate(id_puzzlehunt):
 @puzzlehunts.route('/puzzlehunts/<id_puzzlehunt>/delete', methods=("POST",))
 @admin_required
 def puzzlehunts_delete(id_puzzlehunt):
-    if id_puzzlehunt == str(get_current_puzzlehunt()):
+    if id_puzzlehunt == str(Puzzlehunt.get_current_id()):
         flash(f"Aktivní šifrovačku nelze smazat.", "warning")
         return redirect("/puzzlehunts")
 

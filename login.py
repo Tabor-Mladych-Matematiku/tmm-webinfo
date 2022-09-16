@@ -3,8 +3,8 @@ from flask_bcrypt import check_password_hash
 from flask_login import current_user, login_user, login_required, logout_user
 
 from config import config
-from db_model import Admin, Team
-from helpers import get_current_puzzlehunt, is_safe_url
+from db_model import Admin, Team, Puzzlehunt
+from helpers import is_safe_url
 
 login_blueprint = Blueprint('login', __name__, template_folder='templates', static_folder='static')
 
@@ -26,7 +26,7 @@ def login():
                 return redirect(next_url)
             return redirect('/')
         else:
-            team: Team = Team.query.filter_by(name=user, id_puzzlehunt=get_current_puzzlehunt()).first()
+            team: Team = Team.query.filter_by(name=user, id_puzzlehunt=Puzzlehunt.get_current_id()).first()
             if team and check_password_hash(team.password, password):
                 login_user(team)
                 next_url = request.args.get('next')

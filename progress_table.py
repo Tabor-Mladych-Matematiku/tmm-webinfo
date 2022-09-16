@@ -3,9 +3,8 @@ from typing import List
 from flask import Blueprint
 from sqlalchemy import func
 
-from db_model import Puzzle, Team, TeamArrived, TeamSolved, TeamUsedHint, Hint, TeamSubmittedCode
-from helpers import render, get_current_puzzlehunt, admin_required
-from puzzlehunts import get_settings_for_puzzlehunt
+from db_model import Puzzle, Team, TeamArrived, TeamSolved, TeamUsedHint, Hint, TeamSubmittedCode, Puzzlehunt
+from helpers import render, admin_required
 
 progress_table = Blueprint('progress_table', __name__, template_folder='templates', static_folder='static')
 
@@ -13,9 +12,9 @@ progress_table = Blueprint('progress_table', __name__, template_folder='template
 @progress_table.route('/progress')
 @admin_required
 def progress():
-    puzzles = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).order_by(Puzzle.order).all()
-    teams = Team.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).order_by(Team.name).all()
-    team_ids = Team.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).with_entities(Team.id_team)
+    puzzles = Puzzle.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id()).order_by(Puzzle.order).all()
+    teams = Team.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id()).order_by(Team.name).all()
+    team_ids = Team.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id()).with_entities(Team.id_team)
 
     arrivals: List[TeamArrived] = TeamArrived.query\
         .filter(TeamArrived.id_team.in_(team_ids)).all()
@@ -42,7 +41,7 @@ def progress():
         hints[id_team][id_puzzle] = hint_count
         hints[id_team]["sum"] += hint_count
 
-    puzzlehunt_settings = get_settings_for_puzzlehunt(get_current_puzzlehunt())
+    puzzlehunt_settings = Puzzlehunt.get_current().get_settings()
     finish_times = {}
     if "finish_code" in puzzlehunt_settings:
         try:

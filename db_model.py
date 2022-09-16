@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
+from typing import Dict
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, backref
 
 from abstract import Abstract
+
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -30,6 +32,26 @@ class Puzzlehunt(db.Model):
 
     def __init__(self, puzzlehunt):
         self.puzzlehunt = puzzlehunt
+
+    def get_settings(self) -> Dict[str, "PuzzlehuntSettings"]:
+        return Puzzlehunt.get_settings_for_id(self.id_puzzlehunt)
+
+    @staticmethod
+    def get_settings_for_id(id_puzzlehunt) -> Dict[str, "PuzzlehuntSettings"]:
+        return {ps.key: ps for ps in
+                PuzzlehuntSettings.query.filter_by(id_puzzlehunt=id_puzzlehunt)}
+
+    @staticmethod
+    def get_current_id():
+        current_puzzlehunt = Settings.query.get("current_puzzlehunt")
+        if current_puzzlehunt is None:
+            raise ValueError("Current puzzlehunt is not set in the settings. The database was probably initialized incorrectly.")
+
+        return int(current_puzzlehunt.value)
+
+    @staticmethod
+    def get_current() -> "Puzzlehunt":
+        return Puzzlehunt.query.get(Puzzlehunt.get_current_id())
 
 
 class PuzzlehuntSettings(db.Model):
@@ -313,17 +335,39 @@ class Hint(db.Model):
         self.minutes_to_open = minutes_to_open
         self.hint = hint
 
-    def is_open(self, arrival_time: datetime):
+    def is_open(self, arrival_time: datetime, id_team):
+        if self._hints_are_ordered():
+            if not self._all_previous_hints_used(id_team):
+                return False
+        return self._hint_time_passed(arrival_time)
+
+    @staticmethod
+    def _hints_are_ordered():
+        puzzlehunt_settings = Puzzlehunt.get_current().get_settings()
+        return "hints_are_ordered" in puzzlehunt_settings and puzzlehunt_settings["hints_are_ordered"].value == "True"
+
+    def _all_previous_hints_used(self, id_team):
+        previous_hints_count = TeamUsedHint.query\
+            .filter_by(id_team=id_team)\
+            .join(Hint)\
+            .filter(Hint.id_puzzle == self.id_puzzle)\
+            .count()
+        return previous_hints_count + 1 >= self.order
+
+    def _hint_time_passed(self, arrival_time: datetime):
         return datetime.now() > arrival_time + timedelta(minutes=self.minutes_to_open)
 
-    def time_to_hint(self, arrival_time: datetime) -> timedelta:
+    def _time_to_hint(self, arrival_time: datetime) -> timedelta:
         time_since_arrival = datetime.now() - arrival_time
         return timedelta(minutes=self.minutes_to_open) - time_since_arrival
 
-    def time_to_hint_format(self, arrival_time: datetime):
-        time_to_hint = self.time_to_hint(arrival_time)
+    def hint_opens_in(self, arrival_time: datetime):
+        if self._hints_are_ordered():
+            return "Nejprve použijte předchozí nápovědy"
+
+        time_to_hint = self._time_to_hint(arrival_time)
         minutes, seconds = divmod(time_to_hint.seconds, 60)
-        return f"{minutes} minut {seconds} sekund"
+        return f"Za {minutes} minut {seconds} sekund"
 
 
 class TeamUsedHint(db.Model, HistoryEntry):

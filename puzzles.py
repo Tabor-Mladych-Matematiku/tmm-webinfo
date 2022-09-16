@@ -1,8 +1,8 @@
 from flask import request, redirect, flash, Blueprint
 
 from codes import get_arrival_codes, get_solution_codes
-from db_model import Puzzle, db, PuzzlePrerequisite
-from helpers import render, get_current_puzzlehunt, admin_required
+from db_model import Puzzle, db, PuzzlePrerequisite, Puzzlehunt
+from helpers import render, admin_required
 from hints import get_hints
 
 puzzles = Blueprint('puzzles', __name__, template_folder='templates', static_folder='static')
@@ -11,7 +11,7 @@ puzzles = Blueprint('puzzles', __name__, template_folder='templates', static_fol
 @puzzles.route('/puzzles')
 @admin_required
 def puzzles_list():
-    puzzles = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).order_by(Puzzle.order).all()
+    puzzles = Puzzle.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id()).order_by(Puzzle.order).all()
     return render("puzzles.html", puzzles=puzzles)
 
 
@@ -19,11 +19,11 @@ def puzzles_list():
 @admin_required
 def puzzles_new():
     if request.method == "POST":
-        puzzle = Puzzle(get_current_puzzlehunt(), request.form["puzzle"], request.form["assignment"], request.form["order"])
+        puzzle = Puzzle(Puzzlehunt.get_current_id(), request.form["puzzle"], request.form["assignment"], request.form["order"])
         db.session.add(puzzle)
         db.session.commit()
         return redirect(f"/puzzles/{puzzle.id_puzzle}")
-    order = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).count() + 1
+    order = Puzzle.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id()).count() + 1
     return render("puzzle_edit.html", order=order)
 
 
@@ -74,7 +74,7 @@ def prerequisites_new(id_new_puzzle):
         return redirect(f"/puzzles/{id_new_puzzle}")
     else:
         prerequisites_ids = [p.id_puzzle for p in puzzle.get_prerequisites()]
-        other_puzzles = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt())\
+        other_puzzles = Puzzle.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id())\
             .filter(Puzzle.id_puzzle.not_in(prerequisites_ids + [puzzle.id_puzzle])).all()
         return render("prerequisite_edit.html", puzzle=puzzle, other_puzzles=other_puzzles)
 

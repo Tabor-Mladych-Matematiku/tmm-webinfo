@@ -1,7 +1,7 @@
 from flask import request, redirect, flash, Blueprint
 
-from db_model import Team, db
-from helpers import render, get_current_puzzlehunt, admin_required
+from db_model import Team, db, Puzzlehunt
+from helpers import render, admin_required
 
 teams = Blueprint('teams', __name__, template_folder='templates', static_folder='static')
 
@@ -9,7 +9,7 @@ teams = Blueprint('teams', __name__, template_folder='templates', static_folder=
 @teams.route('/teams')
 @admin_required
 def teams_list():
-    teams = Team.query.filter_by(id_puzzlehunt=get_current_puzzlehunt()).order_by(Team.name).all()
+    teams = Team.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id()).order_by(Team.name).all()
     return render("teams.html", teams=teams)
 
 
@@ -17,7 +17,7 @@ def teams_list():
 @admin_required
 def teams_new():
     if request.method == "POST":
-        team = Team(get_current_puzzlehunt(), request.form["name"], request.form["password"], request.form["phone"], request.form["note"])
+        team = Team(Puzzlehunt.get_current_id(), request.form["name"], request.form["password"], request.form["phone"], request.form["note"])
         db.session.add(team)
         db.session.commit()
         return redirect("/teams")

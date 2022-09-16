@@ -2,8 +2,8 @@ from datetime import datetime
 from flask import redirect, Blueprint, request, flash
 from flask_login import login_required, current_user
 
-from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code, TeamUsedHint, Hint
-from helpers import render, admin_required, get_current_puzzlehunt
+from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code, TeamUsedHint, Hint, Puzzlehunt
+from helpers import render, admin_required
 
 history_blueprint = Blueprint('history', __name__, template_folder='templates', static_folder='static')
 
@@ -38,7 +38,7 @@ def history(id_team=None):
     history = reversed(sorted(history, key=lambda e: e.timestamp))
 
     if current_user.is_admin:
-        puzzles = Puzzle.query.filter_by(id_puzzlehunt=get_current_puzzlehunt())
+        puzzles = Puzzle.query.filter_by(id_puzzlehunt=Puzzlehunt.get_current_id())
     else:
         puzzles = []
 

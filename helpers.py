@@ -4,15 +4,6 @@ from urllib.parse import urlparse, urljoin
 from flask import render_template, redirect, flash, request
 from flask_login import current_user, login_required
 
-from db_model import Settings
-
-
-def get_current_puzzlehunt():
-    current_puzzlehunt = Settings.query.get("current_puzzlehunt")
-    if current_puzzlehunt is not None:
-        return int(current_puzzlehunt.value)
-    return None
-
 
 def render(template, **kwargs):
     parameters = {

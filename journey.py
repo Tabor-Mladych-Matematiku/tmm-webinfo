@@ -4,8 +4,8 @@ from flask_login import login_required, current_user
 
 from codes import compare_codes
 from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code, \
-    TeamSubmittedCode, Hint, TeamUsedHint
-from helpers import render, get_current_puzzlehunt, admin_required
+    TeamSubmittedCode, Hint, TeamUsedHint, Puzzlehunt
+from helpers import render, admin_required
 
 journey = Blueprint('journey', __name__, template_folder='templates', static_folder='static')
 
@@ -14,7 +14,7 @@ journey = Blueprint('journey', __name__, template_folder='templates', static_fol
 @login_required
 def index():
     if current_user.is_admin:
-        return redirect("/puzzlehunts")  # TODO: different page?
+        return redirect("/puzzlehunts")
 
     team_solves_with_arrivals = TeamSolved.query\
         .filter_by(id_team=current_user.id_team)\
@@ -73,7 +73,7 @@ def submit_code(id_team=None):
 
     # check arrival codes for not open puzzles
     not_open_puzzles_ids_query = Puzzle.query\
-        .filter_by(id_puzzlehunt=get_current_puzzlehunt())\
+        .filter_by(id_puzzlehunt=Puzzlehunt.get_current_id())\
         .filter(Puzzle.id_puzzle.not_in(open_puzzles_ids_query))\
         .filter(Puzzle.id_puzzle.not_in(solved_puzzles_ids_query))\
         .with_entities(Puzzle.id_puzzle)
@@ -99,7 +99,7 @@ def submit_code(id_team=None):
             return redirect("/")
 
     not_used_puzzlehunt_codes = Code.query\
-        .filter_by(id_puzzlehunt=get_current_puzzlehunt())\
+        .filter_by(id_puzzlehunt=Puzzlehunt.get_current_id())\
         .filter(Code.id_code.not_in(
             TeamSubmittedCode.query
                 .filter_by(id_team=id_team)
@@ -142,7 +142,7 @@ def use_hint(id_hint, id_team=None):
     if team_arrival is None:
         flash(f"Nejprve zadejte kód stanoviště.", "warning")
         return redirect("/")
-    if not hint.is_open(team_arrival.timestamp):
+    if not hint.is_open(team_arrival.timestamp, id_team):
         flash(f"Nápověda ještě není k dispozici.", "warning")
         return redirect("/")
 
