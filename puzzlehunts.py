@@ -63,6 +63,11 @@ def puzzlehunts_edit(id_puzzlehunt):
         finish_code.value = request.form["finish_code"]
         db.session.add(finish_code)
 
+        start_code = puzzlehunt_settings.get("start_code",
+                                             PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "start_code"))
+        start_code.value = request.form["start_code"]
+        db.session.add(start_code)
+
         db.session.commit()
         return redirect("/puzzlehunts")
     else:

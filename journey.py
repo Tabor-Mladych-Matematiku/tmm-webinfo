@@ -1,5 +1,6 @@
 from typing import List
-from flask import request, redirect, Blueprint, flash, Flask
+
+from flask import request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
 
 from codes import compare_codes

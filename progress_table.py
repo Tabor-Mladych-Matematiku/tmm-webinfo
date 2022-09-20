@@ -50,8 +50,19 @@ def progress():
                     .filter_by(id_code=finish_code)\
                     .filter(TeamSubmittedCode.id_team.in_(team_ids)):
                 finish_times[finish.id_team] = finish.timestamp.strftime("%H:%M")
-        except ValueError:
+        except ValueError:  # ignore if "finish_code" is not an int
+            pass
+    start_times = {}
+    if "start_code" in puzzlehunt_settings:
+        try:
+            start_code = int(puzzlehunt_settings["start_code"].value)
+            for start in TeamSubmittedCode.query \
+                    .filter_by(id_code=start_code) \
+                    .filter(TeamSubmittedCode.id_team.in_(team_ids)):
+                start_times[start.id_team] = start.timestamp.strftime("%H:%M")
+        except ValueError:  # ignore if "start_code" is not an int
             pass
 
     return render("progress_table.html", fluid=True, puzzles=puzzles, teams=teams,
-                  arrival_times=arrival_times, solve_times=solve_times, hints=hints, finish_times=finish_times)
+                  arrival_times=arrival_times, solve_times=solve_times, hints=hints,
+                  finish_times=finish_times, start_times=start_times)
