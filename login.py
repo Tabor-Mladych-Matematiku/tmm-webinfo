@@ -12,7 +12,7 @@ login_blueprint = Blueprint('login', __name__, template_folder='templates', stat
 @login_blueprint.route('/login', methods=("GET", "POST"))
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('example'))
+        return redirect('/')
 
     user = ""
     if request.method == "POST":
