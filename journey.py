@@ -1,5 +1,5 @@
 from typing import List
-from flask import request, redirect, Blueprint, flash
+from flask import request, redirect, Blueprint, flash, Flask
 from flask_login import login_required, current_user
 
 from codes import compare_codes
@@ -68,7 +68,10 @@ def submit_code(id_team=None):
             team_solved = TeamSolved(id_team, solution.id_puzzle, solution.id_solution_code)
             db.session.add(team_solved)
             db.session.commit()
-            flash(f'Řešení "{solution.code}" je správně.', "success")
+            flash_message = f'Řešení "{solution.code}" je správně.'
+            if solution.message:
+                flash_message += f'<div class="mt-2">{solution.message}</div>'
+            flash(flash_message, "success")
             return redirect("/")
 
     # check arrival codes for not open puzzles
@@ -95,7 +98,10 @@ def submit_code(id_team=None):
             team_arrived = TeamArrived(id_team, arrival.id_puzzle, arrival.id_arrival_code)
             db.session.add(team_arrived)
             db.session.commit()
-            flash(f'Kód stanoviště "{arrival.code}" je správný. Šifra "{arrival.puzzle.puzzle}" otevřena.', "success")
+            flash_message = f'Kód stanoviště "{arrival.code}" je správný. Šifra "{arrival.puzzle.puzzle}" otevřena.'
+            if arrival.message:
+                flash_message += f'<div class="mt-2">{arrival.message}</div>'
+            flash(flash_message, "success")
             return redirect("/")
 
     not_used_puzzlehunt_codes = Code.query\
@@ -110,7 +116,10 @@ def submit_code(id_team=None):
             team_submitted_code = TeamSubmittedCode(id_team, puzzlehunt_code.id_code)
             db.session.add(team_submitted_code)
             db.session.commit()
-            flash(f'Kód "{puzzlehunt_code.code}" je správný.', "success")
+            flash_message = f'Kód "{puzzlehunt_code.code}" je správný.'
+            if puzzlehunt_code.message:
+                flash_message += f'<div class="mt-2">{puzzlehunt_code.message}</div>'
+            flash(flash_message, "success")
             return redirect("/")
 
     flash(f'Kód "{code}" není správný (nebo už byl zadán).', "danger")
