@@ -31,20 +31,6 @@
         </div>
         {% if puzzlehunt %}
             <div class="row mb-3">
-                <label for="finish_code" class="col-3 col-form-label">Kód pro cíl</label>
-                <div class="col-9">
-                    <select class="form-select" id="finish_code" name="finish_code">
-                        <option value="" {{ "selected" if "finish_code" not in puzzlehunt_settings or puzzlehunt_settings["finish_code"].value == "" }}></option>
-                        {% for code in codes %}
-                            <option value="{{ code.id_code }}"
-                                    {{ "selected=selected" if "finish_code" in puzzlehunt_settings and puzzlehunt_settings["finish_code"].value == (code.id_code|string) }}>
-                                {{ code.code }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="row mb-3">
                 <label for="start_code" class="col-3 col-form-label">Kód pro start</label>
                 <div class="col-9">
                     <select class="form-select" id="start_code" name="start_code">
@@ -52,6 +38,20 @@
                         {% for code in codes %}
                             <option value="{{ code.id_code }}"
                                     {{ "selected=selected" if "start_code" in puzzlehunt_settings and puzzlehunt_settings["start_code"].value == (code.id_code|string) }}>
+                                {{ code.code }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="finish_code" class="col-3 col-form-label">Kód pro cíl</label>
+                <div class="col-9">
+                    <select class="form-select" id="finish_code" name="finish_code">
+                        <option value="" {{ "selected" if "finish_code" not in puzzlehunt_settings or puzzlehunt_settings["finish_code"].value == "" }}></option>
+                        {% for code in codes %}
+                            <option value="{{ code.id_code }}"
+                                    {{ "selected=selected" if "finish_code" in puzzlehunt_settings and puzzlehunt_settings["finish_code"].value == (code.id_code|string) }}>
                                 {{ code.code }}
                             </option>
                         {% endfor %}
