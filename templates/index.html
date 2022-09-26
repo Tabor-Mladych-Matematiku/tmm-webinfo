@@ -25,6 +25,48 @@
     {% endif %}
 
     {% for arrival in arrivals %}
+        <script>
+            const intervals = {}
+            const times = {}
+
+            /** minut -> minutu, minuty */
+            const declension = (n) => {
+                if (n === 1) return "u";
+                if (n >= 2 && n <= 4) return "y";
+                return "";
+            }
+
+            function setButtonTime(id_puzzle, hint_order) {
+                const time = times[id_puzzle][hint_order]--;
+                if (time <= 0) {
+                    enableHint(id_puzzle, hint_order);
+                    return;
+                }
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+
+                document.getElementById(`hint_disabled_${id_puzzle}_${hint_order}`).innerText =
+                    `Za ${minutes} minut${declension(minutes)} ${seconds} sekund${declension(seconds)}`;
+            }
+
+            function enableHint(id_puzzle, hint_order) {
+                document.getElementById(`hint_form_${id_puzzle}_${hint_order}`).classList.remove("d-none");
+                document.getElementById(`hint_form_${id_puzzle}_${hint_order}`).classList.add("d-inline");
+                document.getElementById(`hint_disabled_${id_puzzle}_${hint_order}`).classList.remove("d-inline");
+                document.getElementById(`hint_disabled_${id_puzzle}_${hint_order}`).classList.add("d-none");
+                clearInterval(intervals[id_puzzle][hint_order]);
+            }
+
+            function startInterval(id_puzzle, hint_order, seconds) {
+                if (!times.hasOwnProperty(id_puzzle))
+                    times[id_puzzle] = {};
+                if (!intervals.hasOwnProperty(id_puzzle))
+                    intervals[id_puzzle] = {};
+                times[id_puzzle][hint_order] = seconds;
+                intervals[id_puzzle][hint_order] = setInterval(setButtonTime, 1000, id_puzzle, hint_order);
+                setButtonTime(id_puzzle, hint_order);
+            }
+        </script>
         <div class="row">
             <div class="col">
                 <div class="card mb-3">
@@ -39,13 +81,26 @@
 
                         {% for hint in arrival.puzzle.get_available_hints(current_user.id_team) %}
                             <h6 class="mt-2">Nápověda {{ hint.order }}</h6>
-                            {% if hint.is_open(arrival.timestamp, current_user.id_team) %}
-                                <form method="post" action="/hint/{{ hint.id_hint }}" class="d-inline" onsubmit='return confirm("Opravdu chcete nápovědu?")'>
-                                    <button type="submit" class="btn btn-primary">Zobrazit nápovědu</button>
-                                </form>
-                            {% else %}
-                                <button type="button" class="btn btn-primary" disabled>{{ hint.hint_opens_in(arrival.timestamp, current_user.id_team) }}</button>
-                            {% endif %}
+                            <form class="{{ "d-inline" if hint.is_open(arrival.timestamp, current_user.id_team) else "d-none" }}"
+                                  id="hint_form_{{ arrival.id_puzzle }}_{{ hint.order }}"
+                                  method="post" action="/hint/{{ hint.id_hint }}" onsubmit='return confirm("Opravdu chcete nápovědu?")'
+                            >
+                                <button type="submit" class="btn btn-primary">Zobrazit nápovědu</button>
+                            </form>
+                            <button class="btn btn-primary {{ "d-inline" if not hint.is_open(arrival.timestamp, current_user.id_team) else "d-none" }}"
+                                    id="hint_disabled_{{ arrival.id_puzzle }}_{{ hint.order }}"
+                                    type="button" disabled>
+                                {% if hint.requires_previous(current_user.id_team) %}
+                                    Nejprve použijte předchozí nápovědy
+                                {% elif not hint.is_open(arrival.timestamp, current_user.id_team) %}
+                                    <script>
+                                        let id_puzzle = {{ arrival.id_puzzle }};
+                                        let hint_order = {{ hint.order }};
+                                        let seconds = {{ hint.seconds_to_hint(arrival.timestamp)}};
+                                        startInterval(id_puzzle, hint_order, seconds);
+                                    </script>
+                                {% endif %}
+                            </button>
                         {% endfor %}
                     </div>
                     <div class="card-footer text-muted">

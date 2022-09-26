@@ -139,27 +139,26 @@ def submit_code_admin(id_team):
 def use_hint(id_hint, id_team=None):
     if id_team is None:
         id_team = current_user.id_team
-    else:
-        if not current_user.is_admin:
-            flash("Tato operace je dostupná pouze organizátorům.", "danger")
-            return redirect("/")
+    elif not current_user.is_admin:
+        flash("Tato operace je dostupná pouze organizátorům.", "danger")
+        return redirect("/")
 
     hint = Hint.query.get(id_hint)
     if hint is None:
-        flash(f"Nápověda neexistuje.", "warning")
+        flash("Nápověda neexistuje.", "warning")
         return redirect("/")
     team_arrival = TeamArrived.query.get((id_team, hint.id_puzzle))
     if team_arrival is None:
-        flash(f"Nejprve zadejte kód stanoviště.", "warning")
+        flash("Nejprve zadejte kód stanoviště.", "warning")
         return redirect("/")
     if not hint.is_open(team_arrival.timestamp, id_team):
-        flash(f"Nápověda ještě není k dispozici.", "warning")
+        flash("Nápověda ještě není k dispozici.", "warning")
         return redirect("/")
 
     team_used_hint = TeamUsedHint(id_team, id_hint)
     db.session.add(team_used_hint)
     db.session.commit()
-    flash(f'Nápověda zobrazena, najdete ji u příslušné šifry.', "success")
+    flash(f'Nápověda:<div class="mt-2">{hint.hint}</div>', "success")
     return redirect("/")
 
 
