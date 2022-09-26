@@ -22,7 +22,7 @@
         <div class="row mb-3">
             <label for="timestamp" class="col-3 col-form-label required">Čas</label>
             <div class="col-9">
-                <input type="text" class="form-control" id="timestamp" name="timestamp" required value="{{ entry.timestamp.strftime('%d.%m.%Y %H:%M:%S') }}">
+                <input type="text" class="form-control" id="timestamp" name="timestamp" required value="{{ entry.formatted_timestamp }}">
             </div>
         </div>
         <div class="row mb-3">

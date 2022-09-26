@@ -1,3 +1,4 @@
+from datetime import timezone, timedelta
 from functools import wraps
 from urllib.parse import urlparse, urljoin
 
@@ -21,7 +22,7 @@ def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
         if not current_user.is_admin:
-            flash(f"Tato stránka je dostupná pouze organizátorům.", "danger")
+            flash("Tato stránka je dostupná pouze organizátorům.", "danger")
             return redirect("/")
         return func(*args, **kwargs)
 
@@ -37,3 +38,7 @@ def is_safe_url(target):
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
         ref_url.netloc == test_url.netloc
+
+
+def format_time(time):
+    return time.strftime("%H:%M")

@@ -4,7 +4,7 @@ from flask import Blueprint
 from sqlalchemy import func
 
 from db_model import Puzzle, Team, TeamArrived, TeamSolved, TeamUsedHint, Hint, TeamSubmittedCode, Puzzlehunt
-from helpers import render, admin_required
+from helpers import render, admin_required, format_time
 
 progress_table = Blueprint('progress_table', __name__, template_folder='templates', static_folder='static')
 
@@ -30,11 +30,11 @@ def progress():
 
     arrival_times = defaultdict(dict)
     for arrival in arrivals:
-        arrival_times[arrival.id_team][arrival.id_puzzle] = arrival.timestamp.strftime("%H:%M")
+        arrival_times[arrival.id_team][arrival.id_puzzle] = format_time(arrival.timestamp)
 
     solve_times = defaultdict(dict)
     for solve in solves:
-        solve_times[solve.id_team][solve.id_puzzle] = solve.timestamp.strftime("%H:%M")
+        solve_times[solve.id_team][solve.id_puzzle] = format_time(solve.timestamp)
 
     hints = defaultdict(lambda: defaultdict(int))
     for id_team, id_puzzle, hint_count in hints_used:
@@ -49,7 +49,7 @@ def progress():
             for finish in TeamSubmittedCode.query\
                     .filter_by(id_code=finish_code)\
                     .filter(TeamSubmittedCode.id_team.in_(team_ids)):
-                finish_times[finish.id_team] = finish.timestamp.strftime("%H:%M")
+                finish_times[finish.id_team] = format_time(finish.timestamp)
         except ValueError:  # ignore if "finish_code" is not an int
             pass
     start_times = {}
@@ -59,7 +59,7 @@ def progress():
             for start in TeamSubmittedCode.query \
                     .filter_by(id_code=start_code) \
                     .filter(TeamSubmittedCode.id_team.in_(team_ids)):
-                start_times[start.id_team] = start.timestamp.strftime("%H:%M")
+                start_times[start.id_team] = format_time(start.timestamp)
         except ValueError:  # ignore if "start_code" is not an int
             pass
 

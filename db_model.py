@@ -222,6 +222,11 @@ class SolutionCode(db.Model):
 class HistoryEntry(Abstract):
 
     __required_attributes__ = ["icon_html", "history_entry_html", "edit_url", "timestamp"]
+    timestamp: datetime
+
+    @property
+    def formatted_timestamp(self):
+        return self.timestamp.strftime('%d.%m.%Y %H:%M:%S')
 
 
 class TeamArrived(db.Model, HistoryEntry):

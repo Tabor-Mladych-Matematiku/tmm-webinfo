@@ -49,7 +49,7 @@
                         {% endfor %}
                     </div>
                     <div class="card-footer text-muted">
-                        <div>Příchod: {{ arrival.timestamp.strftime("%H:%M") }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
+                        <div>Příchod: {{ arrival.timestamp|format_time }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
                         {% if arrival.arrival_code.message %}
                             <div>{{ arrival.arrival_code.message|safe }}</div>
                         {% endif %}
@@ -72,7 +72,7 @@
                         <div>{{ submitted_code.code.message|safe }}</div>
                     </div>
                     <div class="card-footer text-muted">
-                        <div>Zadáno: {{ submitted_code.timestamp.strftime("%H:%M") }}</div>
+                        <div>Zadáno: {{ submitted_code.timestamp|format_time }}</div>
                     </div>
                 </div>
             </div>
@@ -92,11 +92,11 @@
                         <div>{{ solve.puzzle.assignment|safe }}</div>
                     </div>
                     <div class="card-footer text-muted">
-                        <div>Příchod: {{ arrival.timestamp.strftime("%H:%M") }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
+                        <div>Příchod: {{ arrival.timestamp|format_time }}, kód stanoviště: "{{ arrival.arrival_code.code }}"</div>
                         {% if arrival.arrival_code.message %}
                             <div>{{ arrival.arrival_code.message|safe }}</div>
                         {% endif %}
-                        <div class="mt-2">Odchod: {{ solve.timestamp.strftime("%H:%M") }}, řešení: "{{ solve.solution_code.code }}"</div>
+                        <div class="mt-2">Odchod: {{ solve.timestamp|format_time }}, řešení: "{{ solve.solution_code.code }}"</div>
                         {% if solve.solution_code.message %}
                             <div>{{ solve.solution_code.message|safe }}</div>
                         {% endif %}

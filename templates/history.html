@@ -8,7 +8,7 @@
         {% for entry in history %}
             <li class="list-group-item d-flex align-items-center">
                 <div style="width: 60px">
-                    {{ entry.timestamp.strftime("%H:%M") }}
+                    {{ entry.timestamp|format_time }}
                 </div>
                 <div class="flex-fill">
                     {{ entry.icon_html|safe }}

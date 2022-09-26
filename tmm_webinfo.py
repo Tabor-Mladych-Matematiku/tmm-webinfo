@@ -3,10 +3,22 @@ from flask_login import LoginManager
 
 from db_model import db, Admin, Team, bcrypt
 from config import config
+from helpers import format_time
+
 
 app = Flask(__name__)
 app.secret_key = config['secret']
 app.config["DEBUG"] = True
+
+# Timezone configuration
+
+try:  # Linux only
+    import os
+    from time import tzset
+    os.environ['TZ'] = config['timezone']
+    tzset()
+except ImportError:
+    pass
 
 # Database configuration
 
@@ -75,3 +87,8 @@ from journey import journey
 app.register_blueprint(journey)
 from history import history_blueprint
 app.register_blueprint(history_blueprint)
+
+
+# Template helpers
+
+app.jinja_env.filters['format_time'] = format_time
