@@ -25,13 +25,13 @@
         <div class="row mb-3">
             <label for="phone" class="col-3 col-form-label">Telefon</label>
             <div class="col-9">
-                <input type="text" class="form-control" id="phone" name="phone" value="{{ team.phone if team else order }}">
+                <input type="text" class="form-control" id="phone" name="phone" value="{{ team.phone }}">
             </div>
         </div>
         <div class="row mb-3">
             <label for="note" class="col-3 col-form-label">Poznámka</label>
             <div class="col-9">
-                <textarea class="form-control" id="note" name="note" rows="1"></textarea>
+                <textarea class="form-control" id="note" name="note" rows="1">{{ team.note }}</textarea>
             </div>
         </div>
         <div class="row mb-3">

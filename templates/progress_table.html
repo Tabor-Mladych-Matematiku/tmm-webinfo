@@ -40,7 +40,9 @@
         <tbody>
         {% for team in teams %}
             <tr>
-                <th scope="row"><a href="/history/{{ team.id_team }}">{{ team.name }}</a></th>
+                <th scope="row"><abbr title="{{ team.note }}">
+                    <a href="/history/{{ team.id_team }}">{{ team.name }}</a>
+                </abbr></th>
                 {% if start_times %}
                     <td class="border-start">
                         {{ start_times[team.id_team] }}

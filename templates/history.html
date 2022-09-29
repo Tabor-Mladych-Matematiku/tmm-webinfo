@@ -4,6 +4,10 @@
 
 {% block content %}
     <h1>Historie: {{ team.name }}</h1>
+    {% if current_user.is_admin %}
+        <p><b>Telefon:</b> {{ team.phone }}</p>
+        <p><b>Poznámka:</b> {{ team.note }}</p>
+    {% endif %}
     <ul class="list-group mb-3">
         {% for entry in history %}
             <li class="list-group-item d-flex align-items-center">
