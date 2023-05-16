@@ -7,13 +7,13 @@
         <div class="row mb-3">
             <label for="id_team" class="col-3 col-form-label">id_team</label>
             <div class="col-9">
-                <input type="text" class="form-control" id="id_team" name="id_team" required value="{{ team.id_team if team else "" }}" disabled>
+                <input type="text" class="form-control" id="id_team" name="id_team" required value="{{ team.id_team if team }}" disabled>
             </div>
         </div>
         <div class="row mb-3">
             <label for="name" class="col-3 col-form-label required">Název týmu</label>
             <div class="col-9">
-                <input type="text" class="form-control" id="name" name="name" required value="{{ team.name if team else "" }}">
+                <input type="text" class="form-control" id="name" name="name" required value="{{ team.name if team }}">
             </div>
         </div>
         <div class="row mb-3">
@@ -25,13 +25,13 @@
         <div class="row mb-3">
             <label for="phone" class="col-3 col-form-label">Telefon</label>
             <div class="col-9">
-                <input type="text" class="form-control" id="phone" name="phone" value="{{ team.phone }}">
+                <input type="text" class="form-control" id="phone" name="phone" value="{{ team.phone if team }}">
             </div>
         </div>
         <div class="row mb-3">
             <label for="note" class="col-3 col-form-label">Poznámka</label>
             <div class="col-9">
-                <textarea class="form-control" id="note" name="note" rows="1">{{ team.note }}</textarea>
+                <textarea class="form-control" id="note" name="note" rows="1">{{ team.note if team }}</textarea>
             </div>
         </div>
         <div class="row mb-3">
