@@ -1,4 +1,4 @@
-from datetime import timezone, timedelta
+from datetime import timedelta, datetime
 from functools import wraps
 from urllib.parse import urlparse, urljoin
 
@@ -44,4 +44,10 @@ def is_safe_url(target):
 
 
 def format_time(time):
-    return time.strftime("%H:%M")
+    if isinstance(time, timedelta):
+        hours = time.seconds // 3600
+        minutes = (time.seconds // 60) % 60
+        seconds = time.seconds % 60
+        return f"{hours:02}:{minutes:02}"
+    if isinstance(time, datetime):
+        return time.strftime("%H:%M")

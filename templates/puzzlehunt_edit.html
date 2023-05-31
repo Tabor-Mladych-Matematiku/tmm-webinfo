@@ -29,6 +29,12 @@
                         {{ "checked" if not puzzlehunt or "hints_are_ordered" in puzzlehunt_settings and puzzlehunt_settings["hints_are_ordered"].value == "True" }}>
             </div>
         </div>
+        <div class="row mb-3">
+            <label for="hint_penalty" class="col-3 col-form-label">Penalizace za nápovědu (minuty)</label>
+            <div class="col-9">
+                <input type="number" class="form-control" id="hint_penalty" name="hint_penalty" value="{{ puzzlehunt_settings["hint_penalty"].value if "hint_penalty" in puzzlehunt_settings }}">
+            </div>
+        </div>
         {% if puzzlehunt %}
             <div class="row mb-3">
                 <label for="start_code" class="col-3 col-form-label">Kód pro start</label>

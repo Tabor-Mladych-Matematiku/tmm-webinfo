@@ -29,6 +29,9 @@ def puzzlehunts_new():
         hints_are_ordered = PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "hints_are_ordered")
         hints_are_ordered.value = str("hints_are_ordered" in request.form)
         db.session.add(hints_are_ordered)
+        hint_penalty = PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "hint_penalty")
+        hint_penalty.value = request.form["hint_penalty"]
+        db.session.add(hint_penalty)
         db.session.commit()
 
         return redirect(f"/puzzlehunts/{puzzlehunt.id_puzzlehunt}")
@@ -57,6 +60,11 @@ def puzzlehunts_edit(id_puzzlehunt):
                                                     PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "hints_are_ordered"))
         hints_are_ordered.value = str("hints_are_ordered" in request.form)
         db.session.add(hints_are_ordered)
+
+        hint_penalty = puzzlehunt_settings.get("hint_penalty",
+                                               PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "hint_penalty"))
+        hint_penalty.value = request.form["hint_penalty"]
+        db.session.add(hint_penalty)
 
         finish_code = puzzlehunt_settings.get("finish_code",
                                               PuzzlehuntSettings(puzzlehunt.id_puzzlehunt, "finish_code"))
