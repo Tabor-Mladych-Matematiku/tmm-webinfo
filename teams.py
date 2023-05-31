@@ -55,5 +55,5 @@ def teams_delete(id_team):
 
     db.session.delete(team)
     db.session.commit()
-    flash(f'Tým "{team.team}" smazán.', "success")
+    flash(f'Tým "{team.name}" (id={team.id}) smazán.', "success")
     return redirect("/teams")
