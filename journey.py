@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from codes import compare_codes
 from db_model import Puzzle, TeamSolved, TeamArrived, ArrivalCode, SolutionCode, db, PuzzlePrerequisite, Code, \
-    TeamSubmittedCode, Hint, TeamUsedHint, Puzzlehunt
+    TeamSubmittedCode, Hint, TeamUsedHint, Puzzlehunt, WrongCode
 from helpers import render, admin_required
 
 journey = Blueprint('journey', __name__, template_folder='templates', static_folder='static')
@@ -124,6 +124,9 @@ def submit_code(id_team=None):
             return redirect("/")
 
     flash(f'Kód "{code}" není správný (nebo už byl zadán).', "danger")
+    wrong_code = WrongCode(id_team, code)
+    db.session.add(wrong_code)
+    db.session.commit()
     return redirect("/")
 
 

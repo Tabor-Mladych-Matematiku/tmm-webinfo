@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import redirect, Blueprint, request, flash
 from flask_login import login_required, current_user
 
-from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code, TeamUsedHint, Hint, Puzzlehunt
+from db_model import Puzzle, TeamSolved, TeamArrived, db, Team, TeamSubmittedCode, Code, TeamUsedHint, Hint, Puzzlehunt, WrongCode
 from helpers import render, admin_required
 
 history_blueprint = Blueprint('history', __name__, template_folder='templates', static_folder='static')
@@ -33,8 +33,11 @@ def history(id_team=None):
         .filter_by(id_team=id_team) \
         .join(Hint) \
         .all()
+    team_wrong_codes = WrongCode.query \
+        .filter_by(id_team=id_team) \
+        .all()
 
-    history = team_solves + team_arrivals + team_submitted_codes + team_used_hints
+    history = team_solves + team_arrivals + team_submitted_codes + team_used_hints + team_wrong_codes
     history = reversed(sorted(history, key=lambda e: e.timestamp))
 
     if current_user.is_admin:
@@ -166,3 +169,31 @@ def hint_used_delete(id_team, id_hint):
         flash(f'Zobrazení {hint.order}.nápovědy týmem "{team.name}" smazáno.', "success")
     return redirect(f"/history/{id_team}")
 
+
+@history_blueprint.route('/history/<id_team>/wrong/<id_wrong_code>', methods=("GET", "POST"))
+@admin_required
+def wrong_code_edit(id_team, id_wrong_code):
+    wrong_code = WrongCode.query.get(id_wrong_code)
+
+    if request.method == "POST":
+        wrong_code.timestamp = datetime.strptime(request.form['timestamp'], '%d.%m.%Y %H:%M:%S')
+        db.session.add(wrong_code)
+        db.session.commit()
+        return redirect(f"/history/{id_team}")
+    else:
+        return render("history_entry_edit.html", heading="Upravit čas zadání špatného kódu", back_url=f"/history/{id_team}", entry=wrong_code)
+
+
+@history_blueprint.route('/history/<id_team>/wrong/<id_wrong_code>/delete', methods=("POST",))
+@admin_required
+def wrong_code_submit_delete(id_team, id_wrong_code):
+    wrong_code = WrongCode.query.get(id_wrong_code)
+    if wrong_code is None:
+        flash(f'Zadání špatného kódu neexistuje.', "danger")
+    else:
+        team = wrong_code.team
+        code = wrong_code.code
+        db.session.delete(wrong_code)
+        db.session.commit()
+        flash(f'Zadání špatného kódu "{code.code}" týmem "{team.name}" smazáno.', "success")
+    return redirect(f"/history/{id_team}")

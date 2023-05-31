@@ -322,6 +322,35 @@ class TeamSubmittedCode(db.Model, HistoryEntry):
         return f'/history/{self.id_team}/code/{self.id_code}'
 
 
+class WrongCode(db.Model, HistoryEntry):
+
+    __tablename__ = "wrong_codes"
+
+    id_wrong_code = db.Column(db.Integer, primary_key=True)
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'))
+    code = db.Column(db.String(256))
+    timestamp = db.Column(db.DateTime)
+
+    team = relationship("Team", backref=backref("wrong_codes", uselist=False))
+
+    def __init__(self, id_team, code):
+        self.id_team = id_team
+        self.code = code
+        self.timestamp = datetime.now()
+
+    @property
+    def icon_html(self):
+        return '<i class="bi bi-x-octagon-fill text-danger"></i>'
+
+    @property
+    def history_entry_html(self):
+        return f'Špatný kód: "{self.code}"'
+
+    @property
+    def edit_url(self):
+        return f'/history/{self.id_team}/wrong/{self.id_wrong_code}'
+
+
 class Hint(db.Model):
 
     __tablename__ = "hints"
