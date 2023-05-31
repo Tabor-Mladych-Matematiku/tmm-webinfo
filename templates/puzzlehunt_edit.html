@@ -61,8 +61,8 @@
         {% endif %}
         <div class="row mb-3">
             <div class="col">
-                <button type="submit" class="btn btn-primary">Uložit</button>
-                <a class="btn btn-secondary" href="/puzzlehunts" role="button">Zpět</a>
+                <button type="submit" class="btn btn-primary mb-1 me-1">Uložit</button>
+                <a class="btn btn-secondary mb-1 me-1" href="/puzzlehunts" role="button">Zpět</a>
             </div>
         </div>
     </form>
@@ -83,7 +83,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <a class="btn btn-secondary" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/codes/new" role="button">Přidat kód</a>
+        <a class="btn btn-primary mb-1 me-1" href="/puzzlehunts/{{ puzzlehunt.id_puzzlehunt }}/codes/new" role="button">Přidat kód</a>
     {% else %}
         <p>Další nastavení se objeví po uložení základních informací.</p>
     {% endif %}

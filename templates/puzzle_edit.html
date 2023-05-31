@@ -31,8 +31,8 @@
         </div>
         <div class="row mb-3">
             <div class="col">
-                <button type="submit" class="btn btn-primary">Uložit</button>
-                <a class="btn btn-secondary" href="/puzzles" role="button">Zpět</a>
+                <button type="submit" class="btn btn-primary mb-1 me-1">Uložit</button>
+                <a class="btn btn-secondary mb-1 me-1" href="/puzzles" role="button">Zpět</a>
             </div>
         </div>
     </form>
@@ -54,7 +54,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/arrival_codes/new" role="button">Přidat otevírací kód</a>
+        <a class="btn btn-primary mb-1 me-1" href="/puzzles/{{ puzzle.id_puzzle }}/arrival_codes/new" role="button">Přidat otevírací kód</a>
 
         <h2>Řešení</h2>
         <ul class="list-group mb-3">
@@ -72,7 +72,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/solution_codes/new" role="button">Přidat řešení</a>
+        <a class="btn btn-primary mb-1 me-1" href="/puzzles/{{ puzzle.id_puzzle }}/solution_codes/new" role="button">Přidat řešení</a>
 
         <h2>Nápovědy</h2>
         <ul class="list-group mb-3">
@@ -93,7 +93,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}/hints/new" role="button">Přidat nápovědu</a>
+        <a class="btn btn-primary mb-1 me-1" href="/puzzles/{{ puzzle.id_puzzle }}/hints/new" role="button">Přidat nápovědu</a>
 
         <h2>Závislosti</h2>
         <p>Šifry, které musí být vyřešené, aby se tahle zpřístupnila.</p>
@@ -111,7 +111,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <a class="btn btn-secondary mb-3" href="/puzzles/{{ puzzle.id_puzzle }}/prerequisites/new" role="button">Přidat šifru</a>
+        <a class="btn btn-primary me-1 mb-3" href="/puzzles/{{ puzzle.id_puzzle }}/prerequisites/new" role="button">Přidat šifru</a>
     {% else %}
         <p>Nastavení nápověd, řešení a závislostí se objeví po uložení základních informací.</p>
     {% endif %}

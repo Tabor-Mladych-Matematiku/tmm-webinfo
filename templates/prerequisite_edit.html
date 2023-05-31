@@ -16,13 +16,13 @@
         {% endfor %}
         <div class="row mb-3">
             <div class="col">
-                <button type="submit" class="btn btn-primary">Uložit</button>
-                <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}" role="button">Zpět</a>
+                <button type="submit" class="btn btn-primary mb-1 me-1">Uložit</button>
+                <a class="btn btn-secondary mb-1 me-1" href="/puzzles/{{ puzzle.id_puzzle }}" role="button">Zpět</a>
             </div>
         </div>
     </form>
     {% else %}
         <p>V této šifrovačce neexistují šifry, na kterých by už šifra "{{ puzzle.puzzle }}" nezávisela.</p>
-        <a class="btn btn-secondary" href="/puzzles/{{ puzzle.id_puzzle }}" role="button">Zpět</a>
+        <a class="btn btn-secondary mb-1 me-1" href="/puzzles/{{ puzzle.id_puzzle }}" role="button">Zpět</a>
     {% endif %}
 {% endblock content_admin %}
