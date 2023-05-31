@@ -5,10 +5,13 @@ from urllib.parse import urlparse, urljoin
 from flask import render_template, redirect, flash, request
 from flask_login import current_user, login_required
 
+from db_model import Puzzlehunt
+
 
 def render(template, **kwargs):
     parameters = {
-        "user": current_user
+        "user": current_user,
+        "current_puzzlehunt_name": Puzzlehunt.get_current().puzzlehunt
     }
     parameters.update(kwargs)
     return render_template(template, **parameters)
