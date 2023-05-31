@@ -78,6 +78,8 @@ from progress_table import progress_table
 app.register_blueprint(progress_table)
 from puzzlehunts_csv_import import puzzlehunts_csv_import
 app.register_blueprint(puzzlehunts_csv_import)
+from teams_csv_import import teams_csv_import
+app.register_blueprint(teams_csv_import)
 
 
 # Team routes

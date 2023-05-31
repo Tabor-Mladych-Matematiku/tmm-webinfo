@@ -1,0 +1,37 @@
+{# templates/teams_csv_import.html #}
+
+{% extends "base_admin.html" %}
+
+{% block content_admin %}
+    <form method="post">
+        <div class="row">
+            <label for="puzzlehunt_csv" class="col-3 col-form-label required">CSV</label>
+            <div class="col-9">
+                <textarea id="puzzlehunt_csv" name="teams_csv" class="form-control" required
+                          placeholder="name,password,phone,note"></textarea>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12 col-sm-3"></div>
+            <div class="col-12 col-sm-9">
+                <dl class="row mt-3">
+                    <dt class="col-12 col-lg-3"><code>name</code></dt>
+                    <dd class="col-12 col-lg-9">jméno týmu (přihlašovací jméno)</dd>
+                    <dt class="col-12 col-lg-3"><code>password</code></dt>
+                    <dd class="col-12 col-lg-9">heslo</dd>
+                    <dt class="col-12 col-lg-3 fst-italic"><code>phone</code></dt>
+                    <dd class="col-12 col-lg-9">telefonní číslo (nepovinné)</dd>
+                    <dt class="col-12 col-lg-3 fst-italic"><code>note</code></dt>
+                    <dd class="col-12 col-lg-9">poznámka (nepovinné)</dd>
+                </dl>
+                <p>CSV zadávejte včetně hlavičky, oddělené čárkami (a pokud jsou v nějaké buňce čárky, dejte ji do uvozovek).</p>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Uložit</button>
+                <a class="btn btn-secondary" href="/teams" role="button">Zpět</a>
+            </div>
+        </div>
+    </form>
+{% endblock content_admin %}
