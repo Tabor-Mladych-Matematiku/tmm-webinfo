@@ -5,12 +5,12 @@ from flask import request, redirect, Blueprint, flash
 from db_model import Puzzlehunt, db, PuzzlehuntSettings, Puzzle, ArrivalCode, SolutionCode, Hint, PuzzlePrerequisite
 from helpers import render, admin_required
 
-csv_import = Blueprint('csv_import', __name__, template_folder='templates', static_folder='static')
+puzzlehunts_csv_import = Blueprint('puzzlehunts_csv_import', __name__, template_folder='templates', static_folder='static')
 
 
-@csv_import.route('/csv_import', methods=("GET", "POST"))
+@puzzlehunts_csv_import.route('/puzzlehunts/csv_import', methods=("GET", "POST"))
 @admin_required
-def puzzlehunts_new():
+def puzzlehunts_import():
     if request.method == "POST":
         try:
             puzzlehunt = Puzzlehunt(request.form["puzzlehunt"])
@@ -54,4 +54,4 @@ def puzzlehunts_new():
             flash(f'Chyba při importu: {e}', "warning")
 
         return redirect(f"/puzzlehunts")
-    return render("csv_import.html")
+    return render("puzzlehunts_csv_import.html")
