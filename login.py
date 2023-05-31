@@ -16,7 +16,7 @@ def login():
 
     user = ""
     if request.method == "POST":
-        user = request.form["user"]
+        user = request.form["user"].strip()
         password = request.form["password"]
 
         if user == "admin" and password == config['admin_password']:
