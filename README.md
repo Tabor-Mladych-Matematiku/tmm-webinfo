@@ -20,5 +20,5 @@ Prepare the database:
 ### Run
 
 ```shell
-py -m flask run 
+py -m flask --app tmm_webinfo run 
 ```
