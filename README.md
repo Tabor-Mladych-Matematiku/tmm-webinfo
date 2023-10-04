@@ -18,8 +18,12 @@ Webinfo pro šifrovačky na Táboře mladých matematiků
     py create_db.py
     ```
 
-### Run
+### Run (for development)
 
 ```shell
 py -m flask --app tmm_webinfo run 
 ```
+
+## Deployment
+
+The [PythonAnywhere](https://eu.pythonanywhere.com/) free hosting can be used to deploy the app. They have a [A beginner's guide to building a simple database-backed Flask website on PythonAnywhere](https://blog.pythonanywhere.com/121/) which can serve as a reference for creating an account there and setting up the database. However, it is not a tutorial for deploying an existing project so instead of writing the code of the app according to the tutorial, this repository can be cloned (using a console) and the *WSGI configuration file* updated accordingly to set `project_home` and import `from tmm_webinfo import app as application`.
