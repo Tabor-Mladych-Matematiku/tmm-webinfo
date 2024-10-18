@@ -233,14 +233,14 @@ class TeamArrived(db.Model, HistoryEntry):
 
     __tablename__ = "team_arrivals"
 
-    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='CASCADE'), primary_key=True)
     id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
     id_arrival_code = db.Column(db.Integer, db.ForeignKey(ArrivalCode.id_arrival_code, ondelete='RESTRICT'))
     timestamp = db.Column(db.DateTime)
 
     puzzle = relationship("Puzzle", backref=backref("team_arrivals", uselist=False))
     arrival_code = relationship("ArrivalCode", backref=backref("team_arrivals", uselist=False))
-    team = relationship("Team", backref=backref("team_arrivals", uselist=False))
+    team = relationship("Team", backref=backref("team_arrivals", cascade="all, delete-orphan"))
 
     def __init__(self, id_team, id_puzzle, id_arrival_code):
         self.id_team = id_team
@@ -265,14 +265,14 @@ class TeamSolved(db.Model, HistoryEntry):
 
     __tablename__ = "team_solves"
 
-    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='CASCADE'), primary_key=True)
     id_puzzle = db.Column(db.Integer, db.ForeignKey(Puzzle.id_puzzle, ondelete='RESTRICT'), primary_key=True)
     id_solution_code = db.Column(db.Integer, db.ForeignKey(SolutionCode.id_solution_code, ondelete='RESTRICT'))
     timestamp = db.Column(db.DateTime)
 
     puzzle = relationship("Puzzle", backref=backref("team_solves", uselist=False))
     solution_code = relationship("SolutionCode", backref=backref("team_solves", uselist=False))
-    team = relationship("Team", backref=backref("team_solves", uselist=False))
+    team = relationship("Team", backref=backref("team_solves", cascade="all, delete-orphan"))
 
     def __init__(self, id_team, id_puzzle, id_solution_code):
         self.id_team = id_team
@@ -297,12 +297,12 @@ class TeamSubmittedCode(db.Model, HistoryEntry):
 
     __tablename__ = "team_submitted_codes"
 
-    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='CASCADE'), primary_key=True)
     id_code = db.Column(db.Integer, db.ForeignKey(Code.id_code, ondelete='RESTRICT'), primary_key=True)
     timestamp = db.Column(db.DateTime)
 
     code = relationship("Code", backref=backref("team_submitted_codes", uselist=False))
-    team = relationship("Team", backref=backref("team_submitted_codes", uselist=False))
+    team = relationship("Team", backref=backref("team_submitted_codes", cascade="all, delete-orphan"))
 
     def __init__(self, id_team, id_code):
         self.id_team = id_team
@@ -327,11 +327,11 @@ class WrongCode(db.Model, HistoryEntry):
     __tablename__ = "wrong_codes"
 
     id_wrong_code = db.Column(db.Integer, primary_key=True)
-    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'))
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='CASCADE'))
     code = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime)
 
-    team = relationship("Team", backref=backref("wrong_codes", uselist=False))
+    team = relationship("Team", backref=backref("wrong_codes", cascade="all, delete-orphan"))
 
     def __init__(self, id_team, code):
         self.id_team = id_team
@@ -405,11 +405,11 @@ class TeamUsedHint(db.Model, HistoryEntry):
 
     __tablename__ = "team_used_hints"
 
-    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='RESTRICT'), primary_key=True)
+    id_team = db.Column(db.Integer, db.ForeignKey(Team.id_team, ondelete='CASCADE'), primary_key=True)
     id_hint = db.Column(db.Integer, db.ForeignKey(Hint.id_hint, ondelete='RESTRICT'), primary_key=True)
     timestamp = db.Column(db.DateTime)
 
-    team = relationship("Team", backref=backref("team_used_hints", uselist=False))
+    team = relationship("Team", backref=backref("team_used_hints", cascade="all, delete-orphan"))
     hint = relationship("Hint", backref=backref("team_used_hints", uselist=False))
 
     def __init__(self, id_team, id_hint):
