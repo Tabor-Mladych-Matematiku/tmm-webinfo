@@ -24,10 +24,10 @@ def format_times(times: dict) -> dict:
 def progress():
     current_puzzlehunt = Puzzlehunt.get_current()
     puzzlehunt_settings = current_puzzlehunt.get_settings()
-    if "start_code" not in puzzlehunt_settings:
+    if "start_code" not in puzzlehunt_settings or puzzlehunt_settings["start_code"].value == "":
         flash("Před zobrazením výsledků je potřeba nastavit kód pro start", "danger")
         return redirect(f'/puzzlehunts/{current_puzzlehunt.id_puzzlehunt}')
-    if "finish_code" not in puzzlehunt_settings:
+    if "finish_code" not in puzzlehunt_settings or puzzlehunt_settings["finish_code"].value == "":
         flash("Před zobrazením výsledků je potřeba nastavit kód pro cíl", "danger")
         return redirect(f'/puzzlehunts/{Puzzlehunt.get_current_id()}')
     start_code = int(puzzlehunt_settings["start_code"].value)
