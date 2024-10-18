@@ -6,7 +6,7 @@ from flask import Blueprint, redirect, flash, request
 from sqlalchemy import func
 from scipy.stats import rankdata
 
-from db_model import Team, TeamUsedHint, Hint, TeamSubmittedCode, Puzzlehunt, db, PuzzlehuntSettings
+from db_model import Team, TeamUsedHint, Hint, TeamSubmittedCode, Puzzlehunt, db, PuzzlehuntSettings, TeamArrived
 from helpers import render, admin_required, format_time
 
 results_table = Blueprint('results_table', __name__, template_folder='templates', static_folder='static')
@@ -24,14 +24,17 @@ def format_times(times: dict) -> dict:
 def progress():
     current_puzzlehunt = Puzzlehunt.get_current()
     puzzlehunt_settings = current_puzzlehunt.get_settings()
-    if "start_code" not in puzzlehunt_settings or puzzlehunt_settings["start_code"].value == "":
-        flash("Před zobrazením výsledků je potřeba nastavit kód pro start", "danger")
-        return redirect(f'/puzzlehunts/{current_puzzlehunt.id_puzzlehunt}')
+
     if "finish_code" not in puzzlehunt_settings or puzzlehunt_settings["finish_code"].value == "":
         flash("Před zobrazením výsledků je potřeba nastavit kód pro cíl", "danger")
         return redirect(f'/puzzlehunts/{Puzzlehunt.get_current_id()}')
-    start_code = int(puzzlehunt_settings["start_code"].value)
     finish_code = int(puzzlehunt_settings["finish_code"].value)
+
+    if "start_code" not in puzzlehunt_settings or puzzlehunt_settings["start_code"].value == "":
+        flash("Není nastaven kód pro start, zobrazený start je čas příchodu týmu na první šifru.", "warning")
+        start_code = None
+    else:
+        start_code = int(puzzlehunt_settings["start_code"].value)
 
     teams: List[Team] = Team.query.filter_by(id_puzzlehunt=current_puzzlehunt.id_puzzlehunt).order_by(Team.name).all()
     team_ids_query = Team.query.filter_by(id_puzzlehunt=current_puzzlehunt.id_puzzlehunt).with_entities(Team.id_team)
@@ -54,10 +57,19 @@ def progress():
         flash("Penalizace za nápovědy není nastavena, zobrazují se výsledky s nulovou penalizací.", "warning")
 
     start_times = {}
-    for start in TeamSubmittedCode.query \
-            .filter_by(id_code=start_code) \
-            .filter(TeamSubmittedCode.id_team.in_(team_ids_query)):
-        start_times[start.id_team] = start.timestamp
+    if start_code is not None:
+        # if start code is set, get start times from the code submission
+        for start in TeamSubmittedCode.query \
+                .filter_by(id_code=start_code) \
+                .filter(TeamSubmittedCode.id_team.in_(team_ids_query)):
+            start_times[start.id_team] = start.timestamp
+    else:
+        # use team's first arrival as start time
+        for id_team, earliest_arrival in db.session \
+                .query(TeamArrived.id_team, func.min(TeamArrived.timestamp)) \
+                .filter(TeamArrived.id_team.in_(team_ids_query)) \
+                .group_by(TeamArrived.id_team):
+            start_times[id_team] = earliest_arrival
 
     finish_times = {}
     for finish in TeamSubmittedCode.query\
