@@ -74,4 +74,51 @@
         </tbody>
     </table>
     </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="autoRefreshToggle">
+        <label class="form-check-label" for="autoRefreshToggle">
+            Automaticky obnovovat stránku (každých 30 sekund)
+        </label>
+    </div>
+
+    <script>
+        // Auto-refresh functionality
+        let autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled') === 'true';
+        let autoRefreshTimer = null;
+
+        function startAutoRefresh() {
+            if (autoRefreshTimer === null) {
+                autoRefreshTimer = setInterval(function() {
+                    location.reload();
+                }, 30000);
+            }
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshTimer !== null) {
+                clearInterval(autoRefreshTimer);
+                autoRefreshTimer = null;
+            }
+        }
+
+        // Initialize checkbox state from localStorage
+        document.getElementById('autoRefreshToggle').checked = autoRefreshEnabled;
+
+        // Start auto-refresh if it was enabled
+        if (autoRefreshEnabled) {
+            startAutoRefresh();
+        }
+
+        // Toggle auto-refresh based on checkbox
+        document.getElementById('autoRefreshToggle').addEventListener('change', function() {
+            autoRefreshEnabled = this.checked;
+            localStorage.setItem('autoRefreshEnabled', autoRefreshEnabled);
+            if (autoRefreshEnabled) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+        });
+    </script>
 {% endblock content_admin %}
