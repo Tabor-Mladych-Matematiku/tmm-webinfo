@@ -14,3 +14,11 @@ label.required:after {
   content: "*";
   color: red;
 }
+
+.input-group .toggle-password {
+    cursor: pointer;
+}
+
+.input-group .toggle-password i {
+    font-size: 1.2rem;
+}

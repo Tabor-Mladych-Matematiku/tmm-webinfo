@@ -16,7 +16,12 @@
         <div class="row mb-3">
             <label for="password" class="col-3 col-form-label">Heslo</label>
             <div class="col-9">
-                <input type="password" class="form-control" id="password" name="password" required>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password" onclick="togglePasswordVisibility(this)">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="row mb-3">
