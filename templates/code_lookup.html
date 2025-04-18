@@ -1,0 +1,49 @@
+{# templates/code_lookup.html #}
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Vyhledávání podle kódu</h1>
+
+    <form method="post" action="/code_lookup">
+        <div class="row mb-3">
+            <div class="col d-flex">
+                <div class="flex-fill me-2">
+                    <input type="text" class="form-control" id="code" name="code" required value="{{ search_code }}" placeholder="Zadejte kód">
+                    <label for="code"></label>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Vyhledat</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% if search_code %}
+        <h2>Výsledky pro kód: "{{ search_code }}"</h2>
+
+        {% if results and results|length > 0 %}
+            <div class="my-3">
+                {{ results[0].icon_html|safe }} {{ results[0].history_entry_html|safe }}
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tým</th>
+                        <th>Čas použití</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                        <tr>
+                            <td><a href="/history/{{ result.id_team }}">{{ result.team.name }}</a></td>
+                            <td>{{ result.timestamp|format_time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Žádný tým nepoužil tento kód.</p>
+        {% endif %}
+    {% endif %}
+{% endblock content %}

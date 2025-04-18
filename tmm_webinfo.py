@@ -82,6 +82,8 @@ from puzzlehunts_csv_import import puzzlehunts_csv_import
 app.register_blueprint(puzzlehunts_csv_import)
 from teams_csv_import import teams_csv_import
 app.register_blueprint(teams_csv_import)
+from code_lookup import code_lookup
+app.register_blueprint(code_lookup)
 
 
 # Team routes
