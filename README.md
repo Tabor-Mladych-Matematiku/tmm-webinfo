@@ -21,7 +21,7 @@ Webinfo pro šifrovačky na Táboře mladých matematiků
 ### Run (for development)
 
 ```shell
-py -m flask --app tmm_webinfo run
+py -m flask --app tmm_webinfo --debug run
 ```
 
 ## Deployment
