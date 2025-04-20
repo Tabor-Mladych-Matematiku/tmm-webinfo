@@ -27,7 +27,7 @@
     {% for arrival in arrivals %}
         <script>
             const intervals = {}
-            const times = {}
+            const endTimes = {}
 
             /** minut -> minutu, minuty */
             const declension = (n) => {
@@ -37,13 +37,14 @@
             }
 
             function setButtonTime(id_puzzle, hint_order) {
-                const time = times[id_puzzle][hint_order]--;
-                if (time <= 0) {
+                const now = Math.floor(Date.now() / 1000);
+                const timeLeft = endTimes[id_puzzle][hint_order] - now;
+                if (timeLeft <= 0) {
                     enableHint(id_puzzle, hint_order);
                     return;
                 }
-                const minutes = Math.floor(time / 60);
-                const seconds = time % 60;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
 
                 document.getElementById(`hint_disabled_${id_puzzle}_${hint_order}`).innerText =
                     `Za ${minutes} minut${declension(minutes)} ${seconds} sekund${declension(seconds)}`;
@@ -58,11 +59,12 @@
             }
 
             function startInterval(id_puzzle, hint_order, seconds) {
-                if (!times.hasOwnProperty(id_puzzle))
-                    times[id_puzzle] = {};
+                if (!endTimes.hasOwnProperty(id_puzzle))
+                    endTimes[id_puzzle] = {};
                 if (!intervals.hasOwnProperty(id_puzzle))
                     intervals[id_puzzle] = {};
-                times[id_puzzle][hint_order] = seconds;
+                const now = Math.floor(Date.now() / 1000);
+                endTimes[id_puzzle][hint_order] = now + seconds;
                 intervals[id_puzzle][hint_order] = setInterval(setButtonTime, 1000, id_puzzle, hint_order);
                 setButtonTime(id_puzzle, hint_order);
             }
@@ -94,10 +96,7 @@
                                     Nejprve použijte předchozí nápovědy
                                 {% elif not hint.is_open(arrival.timestamp, current_user.id_team) %}
                                     <script>
-                                        let id_puzzle = {{ arrival.id_puzzle }};
-                                        let hint_order = {{ hint.order }};
-                                        let seconds = {{ hint.seconds_to_hint(arrival.timestamp)}};
-                                        startInterval(id_puzzle, hint_order, seconds);
+                                        startInterval({{ arrival.id_puzzle }}, {{ hint.order }}, {{ hint.seconds_to_hint(arrival.timestamp)}});
                                     </script>
                                 {% endif %}
                             </button>
